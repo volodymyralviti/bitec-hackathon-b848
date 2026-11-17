@@ -1,0 +1,35 @@
+# Dependencies and build
+node_modules/
+dist/
+coverage/
+.angular/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Codex internal instructions
+/AGENTS.md
+/MASTER_PROMPT_UA.md
+/START_HERE.md
+
+# Private development prompts
+/prompts/
+
+# Internal planning
+/backlog/
+
+# Internal project documentation
+/docs/ARCHITECTURE.md
+/docs/PROJECT_CONTEXT.md
+/docs/TECH_DECISIONS.md
+/docs/IMPLEMENTATION_PLAN.md
+/docs/MVP_ACCEPTANCE.md
+/docs/SAFETY_CONTENT_AI.md
+/docs/SCENARIO_DSL.md
+/docs/SOURCE_TRACEABILITY.md
+
+# Local
+.DS_Store
+*.log
