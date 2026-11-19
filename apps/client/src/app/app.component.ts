@@ -1,26 +1,19 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HealthService } from './core/api/health.service';
+import { Component, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
+  imports: [RouterLink, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  private readonly healthService = inject(HealthService);
-  private readonly destroyRef = inject(DestroyRef);
-  readonly status = signal<'loading' | 'success' | 'error'>('loading');
+  private readonly document = inject(DOCUMENT);
 
-  constructor() {
-    this.checkConnection();
-  }
-
-  checkConnection(): void {
-    this.status.set('loading');
-    this.healthService.getHealth().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => this.status.set('success'),
-      error: () => this.status.set('error')
-    });
+  skipToContent(event: Event): void {
+    // A native fragment resolves against base href="/" and would reload a deep route.
+    event.preventDefault();
+    this.document.getElementById('main-content')?.focus();
   }
 }

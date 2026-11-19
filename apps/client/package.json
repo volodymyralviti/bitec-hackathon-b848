@@ -3,12 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build && pnpm run smoke:schema",
+    "start": "pnpm run prepare:scenarios && ng serve",
+    "build": "pnpm run prepare:scenarios && ng build && pnpm run smoke:schema",
+    "prepare:scenarios": "pnpm --filter @eds/scenario-schema build && node scripts/prepare-scenarios.mjs",
     "smoke:schema": "ng build --configuration development --browser src/schema-import.smoke.ts --ts-config tsconfig.schema-smoke.json --output-path .angular/schema-import-smoke",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test --watch=false --browsers=ChromeHeadless",
-    "test:watch": "ng test",
+    "watch": "pnpm run prepare:scenarios && ng build --watch --configuration development",
+    "test": "pnpm run prepare:scenarios && ng test --watch=false --browsers=ChromeHeadless",
+    "test:watch": "pnpm run prepare:scenarios && ng test",
     "typecheck": "ngc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit"
   },
   "private": true,

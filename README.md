@@ -1,7 +1,9 @@
 # Ethical Dilemmas Simulator
 
-Освітній симулятор етичних дилем українською мовою. Наразі репозиторій містить
-стартові Angular та NestJS застосунки; сценарії й навчальні режими ще не реалізовані.
+Освітній симулятор етичних дилем українською мовою. Є Angular/NestJS, Scenario DSL
+та два demo-only CIDS-inspired JSON. У Stage 05 додано каталог і preview із джерелами;
+повний solo-прохід заблокований відсутнім у цій гілці `@eds/scenario-engine`.
+Деталі фактичного стану й smoke: [README клієнта](apps/client/README.md).
 
 ## Структура
 
@@ -9,7 +11,7 @@
 apps/client/       Angular 21, standalone компоненти, Jasmine/Karma
 apps/server/       NestJS 11 + Express, CommonJS, Jest/Supertest
 packages/scenario-schema/ незалежний DSL v1, Zod, graph/provenance validation
-content/scenarios/ місце для сценаріїв (поки порожнє)
+content/scenarios/ два сценарії й явний JSON-індекс для static adapter
 ```
 
 Порожні каталоги не відтворюються Git до додавання файлів.
@@ -57,17 +59,16 @@ curl http://localhost:3000/api/health
 curl http://localhost:4200/api/health
 ```
 
-Клієнт перевіряє API при відкритті та кнопкою «Перевірити знову».
-Показує завантаження, успіх або зрозумілу помилку. Щоб перевірити недоступність,
-зупиніть API та натисніть кнопку або перезавантажте сторінку.
-Постійного фонового опитування немає.
+Стартовий екран клієнта — `/scenarios`. Каталог і preview читають статичні JSON
+та не залежать від доступності NestJS. Endpoint `/api/health` і HealthService
+зберігаються; перевірка API більше не є стартовим інтерфейсом. Фонового polling немає.
 
 API вже читає `PORT` із середовища (типово 3000); `.env` автоматично не завантажується.
 Наприклад, у PowerShell: `$env:PORT='3001'; pnpm.cmd dev:api`.
 Якщо порт змінено, відповідно змініть target у `apps/client/proxy.conf.json`
 і перезапустіть Angular dev server. Додаткові environment variables чи секрети не потрібні.
 
-Frontend завжди запитує відносний `/api/health`. Proxy зареєстрований лише для
+HealthService використовує відносний `/api/health`. Proxy зареєстрований лише для
 dev server та не входить до production bundle. У production вебсервер має
 передавати `/api/*` до NestJS на тому самому origin; dev proxy там не потрібен.
 Широкий CORS не вмикається.

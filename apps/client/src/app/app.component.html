@@ -1,13 +1,13 @@
-﻿<main>
-  <h1>Симулятор етичних дилем</h1>
-  <p role="status" aria-live="polite" [attr.aria-busy]="status() === 'loading'">
-    @switch (status()) {
-      @case ('loading') { Перевіряємо з’єднання із сервером… }
-      @case ('success') { Сервер доступний }
-      @case ('error') { Не вдалося з’єднатися із сервером }
-    }
-  </p>
-  <button type="button" (click)="checkConnection()" [disabled]="status() === 'loading'">
-    Перевірити знову
-  </button>
-</main>
+<a class="skip-link" href="#main-content" (click)="skipToContent($event)">Перейти до вмісту</a>
+<header class="site-header">
+  <a routerLink="/scenarios" class="brand" aria-label="Точка рішення — каталог сценаріїв">
+    <span class="brand-symbol" aria-hidden="true">↗</span>
+    <span>Точка рішення<small>Симулятор етичних дилем</small></span>
+  </a>
+  <nav aria-label="Головна навігація"><a routerLink="/scenarios">Сценарії <span aria-hidden="true">↗</span></a></nav>
+</header>
+<main id="main-content" class="page-container" tabindex="-1"><router-outlet /></main>
+<footer class="site-footer">
+  <p>Етичне міркування для сектору безпеки й оборони України.</p>
+  <p>Навчальний демопрототип. Без облікових записів і персонального рейтингу.</p>
+</footer>

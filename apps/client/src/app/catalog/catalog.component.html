@@ -1,0 +1,52 @@
+<section class="page-heading" aria-labelledby="catalog-heading">
+  <p class="eyebrow">Практика етичного міркування</p>
+  <h1 id="catalog-heading" tabindex="-1">Рішення мають продовження.</h1>
+  <p class="lead">Дослідіть складну ситуацію, зіставте цінності й простежте наслідки свого вибору.</p>
+  <p class="muted">Українською · без реєстрації · без оцінювання особистості</p>
+</section>
+
+<aside class="learning-note">
+  <strong>Мета — обґрунтувати вибір.</strong>
+  <p>Порівнюйте користь, ризики та вплив на різних людей. Показники описують авторську модель наслідків, а не ваші моральні якості.</p>
+</aside>
+
+@switch (status()) {
+  @case ('loading') {
+    <p class="state-panel" role="status" aria-live="polite">Завантажуємо навчальні ситуації…</p>
+  }
+  @case ('error') {
+    <div class="state-panel" role="alert">
+      <h2>Не вдалося завантажити каталог</h2>
+      <p>Перевірте з’єднання та спробуйте ще раз. Ваші рішення не надсилаються на сервер.</p>
+      <button type="button" class="button" (click)="load()">Спробувати знову</button>
+    </div>
+  }
+  @case ('ready') {
+    @if (!scenarios().length) {
+      <p class="state-panel" role="status">Навчальних сценаріїв поки немає. Спробуйте повернутися пізніше.</p>
+    } @else {
+      <div class="section-heading"><h2>Оберіть ситуацію</h2><span>{{ scenarios().length }} навчальні матеріали</span></div>
+      <div class="scenario-grid">
+        @for (scenario of scenarios(); track scenario.id; let position = $index) {
+          <article class="scenario-card">
+            <div class="card-topline"><span class="case-number">Ситуація {{ position + 1 }}</span><span>Версія {{ scenario.version }}</span></div>
+            <h3>{{ scenario.title }}</h3>
+            <p>{{ scenario.summary }}</p>
+            <app-scenario-status [scenario]="scenario" />
+            <p class="muted small">Складність: автором не визначена. Усі варіанти потребують пояснення.</p>
+            <a class="button" [routerLink]="['/scenarios', scenario.id, 'play']" [attr.aria-label]="'Переглянути: ' + scenario.title">Переглянути ситуацію <span aria-hidden="true">↗</span></a>
+          </article>
+        }
+      </div>
+    }
+  }
+}
+
+<section class="how-it-works" aria-labelledby="how-heading">
+  <h2 id="how-heading">Від ситуації до висновків</h2>
+  <ol>
+    <li><strong>Зрозумійте контекст</strong><span>Визначте, які цінності й обов’язки конфліктують.</span></li>
+    <li><strong>Зробіть і поясніть вибір</strong><span>Зіставте альтернативи та їхні обмеження.</span></li>
+    <li><strong>Поверніться до наслідків</strong><span>Перевірте припущення, джерела та нові обставини.</span></li>
+  </ol>
+</section>
