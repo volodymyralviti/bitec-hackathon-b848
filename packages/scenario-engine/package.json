@@ -1,0 +1,15 @@
+{
+  "name": "@eds/scenario-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": { ".": { "import": { "types": "./dist/esm/index.d.ts", "default": "./dist/esm/index.js" }, "require": { "types": "./dist/cjs/index.d.ts", "default": "./dist/cjs/index.js" } } },
+  "files": ["dist"],
+  "sideEffects": false,
+  "scripts": { "build": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json && node scripts/write-cjs-package.mjs", "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.cjs.json --noEmit", "test": "pnpm build && node --experimental-test-coverage --test test/*.test.mjs", "lint": "eslint src test scripts" },
+  "dependencies": { "@eds/scenario-schema": "workspace:*" },
+  "devDependencies": { "@eslint/js": "9.39.5", "eslint": "9.39.5", "typescript": "~5.9.3", "typescript-eslint": "8.73.0" }
+}
