@@ -1,0 +1,318 @@
+{
+  "schemaVersion": "1",
+  "id": "synthetic-branching",
+  "version": "0.1.0",
+  "language": "uk",
+  "title": "Тест графа",
+  "summary": "Лише синтетичні дані для автоматизованих тестів.",
+  "basedOn": [],
+  "publicationStatus": "demo",
+  "contentReview": {
+    "status": "draft",
+    "demoOnly": true,
+    "aiAssisted": true
+  },
+  "startNodeId": "intro",
+  "sources": [
+    {
+      "sourceId": "fixture-note",
+      "title": "Внутрішня тестова примітка",
+      "sourceType": "editorial",
+      "fileCitation": "packages/scenario-schema/test/fixtures/valid.json",
+      "versionAsOf": null,
+      "revision": "fixture-v1",
+      "verificationStatus": "unverified",
+      "verifiedAt": null
+    }
+  ],
+  "nodes": [
+    {
+      "id": "intro",
+      "type": "narrative",
+      "title": "Вступ",
+      "narrative": "Тестовий вступ без рішення.",
+      "sourceIds": [],
+      "nextNodeId": "d1"
+    },
+    {
+      "id": "d1",
+      "type": "decision",
+      "title": "Тестове рішення",
+      "narrative": "Синтетична ситуація без правових тверджень.",
+      "sourceIds": [
+        "fixture-note"
+      ],
+      "valuesInTension": [
+        "Прозорість",
+        "Швидкість"
+      ],
+      "choices": [
+        {
+          "id": "option-1",
+          "label": "Тестовий варіант option-1",
+          "explanation": "Пояснення тестового вибору.",
+          "nextNodeId": "d2a",
+          "immediateEffects": [
+            {
+              "metric": "trust",
+              "delta": 1,
+              "explanation": "Синтетична зміна для тестування контракту."
+            }
+          ],
+          "sourceIds": [
+            "fixture-note"
+          ],
+          "schedule": [
+            {
+              "id": "later-a",
+              "trigger": {
+                "type": "after_decisions",
+                "count": 1
+              },
+              "effects": [
+                {
+                  "metric": "trust",
+                  "delta": -1,
+                  "explanation": "Синтетична зміна для тестування контракту."
+                }
+              ],
+              "consequenceText": "Тестовий наслідок після наступного рішення."
+            }
+          ]
+        },
+        {
+          "id": "option-2",
+          "label": "Тестовий варіант option-2",
+          "explanation": "Пояснення тестового вибору.",
+          "nextNodeId": "d2b",
+          "immediateEffects": [
+            {
+              "metric": "trust",
+              "delta": 1,
+              "explanation": "Синтетична зміна для тестування контракту."
+            }
+          ],
+          "sourceIds": [
+            "fixture-note"
+          ],
+          "schedule": [
+            {
+              "id": "later-b",
+              "trigger": {
+                "type": "on_enter_node",
+                "nodeId": "d3"
+              },
+              "effects": [
+                {
+                  "metric": "trust",
+                  "delta": 1,
+                  "explanation": "Синтетична зміна для тестування контракту."
+                }
+              ],
+              "consequenceText": "Тестовий наслідок при вході у третє рішення."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2a",
+      "type": "decision",
+      "title": "Тестове рішення",
+      "narrative": "Синтетична ситуація без правових тверджень.",
+      "sourceIds": [
+        "fixture-note"
+      ],
+      "valuesInTension": [
+        "Прозорість",
+        "Швидкість"
+      ],
+      "choices": [
+        {
+          "id": "option-1",
+          "label": "Тестовий варіант option-1",
+          "explanation": "Пояснення тестового вибору.",
+          "nextNodeId": "d3",
+          "immediateEffects": [
+            {
+              "metric": "trust",
+              "delta": 1,
+              "explanation": "Синтетична зміна для тестування контракту."
+            }
+          ],
+          "sourceIds": [
+            "fixture-note"
+          ]
+        },
+        {
+          "id": "option-2",
+          "label": "Тестовий варіант option-2",
+          "explanation": "Пояснення тестового вибору.",
+          "nextNodeId": "d3",
+          "immediateEffects": [
+            {
+              "metric": "trust",
+              "delta": 1,
+              "explanation": "Синтетична зміна для тестування контракту."
+            }
+          ],
+          "sourceIds": [
+            "fixture-note"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2b",
+      "type": "decision",
+      "title": "Тестове рішення",
+      "narrative": "Синтетична ситуація без правових тверджень.",
+      "sourceIds": [
+        "fixture-note"
+      ],
+      "valuesInTension": [
+        "Прозорість",
+        "Швидкість"
+      ],
+      "choices": [
+        {
+          "id": "option-1",
+          "label": "Тестовий варіант option-1",
+          "explanation": "Пояснення тестового вибору.",
+          "nextNodeId": "d3",
+          "immediateEffects": [
+            {
+              "metric": "trust",
+              "delta": 1,
+              "explanation": "Синтетична зміна для тестування контракту."
+            }
+          ],
+          "sourceIds": [
+            "fixture-note"
+          ]
+        },
+        {
+          "id": "option-2",
+          "label": "Тестовий варіант option-2",
+          "explanation": "Пояснення тестового вибору.",
+          "nextNodeId": "d3",
+          "immediateEffects": [
+            {
+              "metric": "trust",
+              "delta": 1,
+              "explanation": "Синтетична зміна для тестування контракту."
+            }
+          ],
+          "sourceIds": [
+            "fixture-note"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "type": "decision",
+      "title": "Тестове рішення",
+      "narrative": "Синтетична ситуація без правових тверджень.",
+      "sourceIds": [
+        "fixture-note"
+      ],
+      "valuesInTension": [
+        "Прозорість",
+        "Швидкість"
+      ],
+      "choices": [
+        {
+          "id": "option-1",
+          "label": "Тестовий варіант option-1",
+          "explanation": "Пояснення тестового вибору.",
+          "nextNodeId": "end-a",
+          "immediateEffects": [
+            {
+              "metric": "trust",
+              "delta": 1,
+              "explanation": "Синтетична зміна для тестування контракту."
+            }
+          ],
+          "sourceIds": [
+            "fixture-note"
+          ]
+        },
+        {
+          "id": "option-2",
+          "label": "Тестовий варіант option-2",
+          "explanation": "Пояснення тестового вибору.",
+          "nextNodeId": "end-b",
+          "immediateEffects": [
+            {
+              "metric": "trust",
+              "delta": 1,
+              "explanation": "Синтетична зміна для тестування контракту."
+            }
+          ],
+          "sourceIds": [
+            "fixture-note"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "end-a",
+      "type": "ending",
+      "title": "Тестове завершення",
+      "narrative": "Тестовий маршрут завершено.",
+      "sourceIds": [
+        "fixture-note"
+      ],
+      "debrief": {
+        "summary": "Підсумок синтетичних наслідків.",
+        "shortTerm": "Умовний негайний результат.",
+        "longTerm": "Умовний подальший результат.",
+        "perspectives": [
+          "Умовна навчальна група."
+        ],
+        "trustAndReputation": "Пояснення впливу на довіру без оцінювання людини.",
+        "valuesInTension": [
+          "Прозорість",
+          "Швидкість"
+        ],
+        "reflectionQuestions": [
+          "Які дані допомогли б обґрунтувати рішення?"
+        ],
+        "sourceIds": [
+          "fixture-note"
+        ],
+        "limitations": "Синтетичний fixture; не навчальний кейс і не правова рекомендація."
+      }
+    },
+    {
+      "id": "end-b",
+      "type": "ending",
+      "title": "Тестове завершення",
+      "narrative": "Тестовий маршрут завершено.",
+      "sourceIds": [
+        "fixture-note"
+      ],
+      "debrief": {
+        "summary": "Підсумок синтетичних наслідків.",
+        "shortTerm": "Умовний негайний результат.",
+        "longTerm": "Умовний подальший результат.",
+        "perspectives": [
+          "Умовна навчальна група."
+        ],
+        "trustAndReputation": "Пояснення впливу на довіру без оцінювання людини.",
+        "valuesInTension": [
+          "Прозорість",
+          "Швидкість"
+        ],
+        "reflectionQuestions": [
+          "Які дані допомогли б обґрунтувати рішення?"
+        ],
+        "sourceIds": [
+          "fixture-note"
+        ],
+        "limitations": "Синтетичний fixture; не навчальний кейс і не правова рекомендація."
+      }
+    }
+  ]
+}
