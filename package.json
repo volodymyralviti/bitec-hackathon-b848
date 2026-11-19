@@ -21,7 +21,7 @@
     "build": "pnpm -r run build",
     "test": "pnpm -r --workspace-concurrency=1 run test && pnpm run test:e2e",
     "test:e2e": "pnpm --filter server run test:e2e",
-    "typecheck": "pnpm -r run typecheck",
-    "lint": "pnpm --filter server run lint"
+    "typecheck": "pnpm --filter @eds/scenario-schema build && pnpm -r run typecheck",
+    "lint": "pnpm --filter @eds/scenario-schema build && pnpm --filter @eds/scenario-schema lint && pnpm --filter server run lint"
   }
 }

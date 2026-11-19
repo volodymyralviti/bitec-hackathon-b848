@@ -53,6 +53,9 @@ importers:
       '@angular/compiler-cli':
         specifier: ^21.2.0
         version: 21.2.26(@angular/compiler@21.2.26)(typescript@5.9.3)
+      '@eds/scenario-schema':
+        specifier: workspace:*
+        version: link:../../packages/scenario-schema
       '@types/jasmine':
         specifier: ~5.1.0
         version: 5.1.15
@@ -96,6 +99,9 @@ importers:
         specifier: ^7.8.1
         version: 7.8.2
     devDependencies:
+      '@eds/scenario-schema':
+        specifier: workspace:*
+        version: link:../../packages/scenario-schema
       '@eslint/eslintrc':
         specifier: ^3.2.0
         version: 3.3.7
@@ -164,6 +170,25 @@ importers:
         version: 5.9.3
       typescript-eslint:
         specifier: ^8.20.0
+        version: 8.73.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3)
+
+  packages/scenario-schema:
+    dependencies:
+      zod:
+        specifier: 4.6.6
+        version: 4.6.6
+    devDependencies:
+      '@eslint/js':
+        specifier: 9.39.5
+        version: 9.39.5
+      eslint:
+        specifier: 9.39.5
+        version: 9.39.5(jiti@2.7.0)
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      typescript-eslint:
+        specifier: 8.73.0
         version: 8.73.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3)
 
 packages:

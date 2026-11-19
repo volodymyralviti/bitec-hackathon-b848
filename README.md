@@ -8,7 +8,7 @@
 ```text
 apps/client/       Angular 21, standalone компоненти, Jasmine/Karma
 apps/server/       NestJS 11 + Express, CommonJS, Jest/Supertest
-packages/          місце для майбутніх спільних пакетів (поки порожнє)
+packages/scenario-schema/ незалежний DSL v1, Zod, graph/provenance validation
 content/scenarios/ місце для сценаріїв (поки порожнє)
 ```
 
@@ -77,11 +77,12 @@ dev server та не входить до production bundle. У production веб
 ```sh
 pnpm build        # production build обох застосунків
 pnpm typecheck    # Angular templates, client specs, server TypeScript
-pnpm test         # Angular unit, Nest unit, потім Nest e2e
+pnpm test         # schema tests, Angular unit, Nest unit, потім Nest e2e
 pnpm test:e2e     # лише Nest e2e
-pnpm lint         # наявний server ESLint, без --fix
+pnpm lint         # scenario-schema і server ESLint, без --fix
 ```
 
+Lint перевіряє scenario-schema та server без автоматичного виправлення.
 Angular ESLint поки не налаштовано. Для інтерактивних тестів:
 
 ```sh
@@ -101,3 +102,21 @@ migrations та production-збіркою після кожного major. Дл�
 [Angular migrations](https://angular.dev/cli/update).
 
 У залежностях залишаються deprecated пакети; їх масове оновлення не виконувалося.
+
+## Scenario Schema (Stage 02)
+
+Пакет `@eds/scenario-schema` містить Zod-схеми, inferred types, структурну й
+семантичну перевірку, машинозчитувані діагностики та JSON Schema export.
+Контракт: [README пакета](packages/scenario-schema/README.md);
+рішення: [ADR 0001](docs/adr/0001-scenario-dsl-v1.md).
+Повний мінімальний JSON: [synthetic fixture](packages/scenario-schema/test/fixtures/minimal.json).
+Це тестові demo-only дані, а не перевірені навчальні чи правові матеріали.
+
+```sh
+pnpm --filter @eds/scenario-schema test
+```
+
+`pnpm build` збирає shared package до застосунків та запускає окремий Angular
+esbuild import smoke. `pnpm typecheck` спершу будує shared declarations.
+`pnpm test` включає тести пакета та імпорту в обох застосунках; `pnpm lint`
+перевіряє новий пакет і сервер. Жодної runtime-функції симулятора не додано.

@@ -4,7 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build && pnpm run smoke:schema",
+    "smoke:schema": "ng build --configuration development --browser src/schema-import.smoke.ts --ts-config tsconfig.schema-smoke.json --output-path .angular/schema-import-smoke",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --watch=false --browsers=ChromeHeadless",
     "test:watch": "ng test",
@@ -25,6 +26,7 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+    "@eds/scenario-schema": "workspace:*",
     "@angular-devkit/build-angular": "^21.2.0",
     "@angular/cli": "^21.2.0",
     "@angular/compiler-cli": "^21.2.0",
