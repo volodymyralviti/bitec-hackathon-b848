@@ -49,6 +49,16 @@ API має віддавати лише доступний учаснику ко�
 перезапуску start; live authoring тут не реалізовано.
 
 Скрипти start/build/watch/test автоматично готують assets і schema build.
+Запускайте з кореня `pnpm dev:web` (у Windows PowerShell — `pnpm.cmd dev:web`).
+Прямий `ng serve -o`, зокрема через глобальний CLI, обходить підготовку: на
+чистому checkout `/scenarios/index.json` тоді поверне 404. Якщо такий сервер уже
+працює, зупиніть його Ctrl+C й виконайте стандартну команду. Відсутність
+`public/scenarios` очікувана: asset input — `.angular/solo-content`.
+Усі три URL `/scenarios/index.json`, `/scenarios/urgent-supply.json` і
+`/scenarios/truth-under-pressure.json` мають повертати JSON, а не HTML fallback.
+Ізольовані regression-тести: `pnpm --filter client test:scenario-assets`.
+Production build додатково перевіряє точний allowlist, валідність і незмінність
+JSON у `dist/client/browser/scenarios`; приватні файли не копіюються.
 Завантажений браузером JSON повторно перевіряється через public validator;
 його код підвантажується окремим chunk. Тексти сценаріїв не дублюються у
 компонентах; тести імпортують оригінальні JSON як fixtures.
