@@ -1,0 +1,507 @@
+{
+  "scenarioId": "urgent-supply",
+  "version": "1.0.0",
+  "analysis": "Static path evidence only; no engine execution and no substitute for validateScenario.",
+  "nodeCount": 12,
+  "narrativeCount": 1,
+  "decisionNodeCount": 7,
+  "choiceCount": 14,
+  "endingCount": 4,
+  "routeCount": 8,
+  "minDecisions": 3,
+  "maxDecisions": 3,
+  "delayedEventCount": 7,
+  "routes": [
+    {
+      "id": "route-1",
+      "nodes": [
+        "intro",
+        "scope",
+        "supplier-contact",
+        "evidence-common",
+        "limited-service"
+      ],
+      "choices": [
+        {
+          "nodeId": "scope",
+          "choiceId": "common-brief"
+        },
+        {
+          "nodeId": "supplier-contact",
+          "choiceId": "shared-questions"
+        },
+        {
+          "nodeId": "evidence-common",
+          "choiceId": "recommend-minimum"
+        }
+      ],
+      "ending": "limited-service",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "supply-brief-rework",
+          "scheduledBy": {
+            "nodeId": "scope",
+            "choiceId": "common-brief"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "evidence-common",
+            "choiceId": "recommend-minimum"
+          }
+        },
+        {
+          "id": "supply-common-record",
+          "scheduledBy": {
+            "nodeId": "supplier-contact",
+            "choiceId": "shared-questions"
+          },
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "evidence-common"
+          },
+          "expectedActivation": {
+            "phase": "on_enter_node",
+            "nodeId": "evidence-common"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-2",
+      "nodes": [
+        "intro",
+        "scope",
+        "supplier-contact",
+        "evidence-common",
+        "planned-pause"
+      ],
+      "choices": [
+        {
+          "nodeId": "scope",
+          "choiceId": "common-brief"
+        },
+        {
+          "nodeId": "supplier-contact",
+          "choiceId": "shared-questions"
+        },
+        {
+          "nodeId": "evidence-common",
+          "choiceId": "recommend-recheck"
+        }
+      ],
+      "ending": "planned-pause",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "supply-brief-rework",
+          "scheduledBy": {
+            "nodeId": "scope",
+            "choiceId": "common-brief"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "evidence-common",
+            "choiceId": "recommend-recheck"
+          }
+        },
+        {
+          "id": "supply-common-record",
+          "scheduledBy": {
+            "nodeId": "supplier-contact",
+            "choiceId": "shared-questions"
+          },
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "evidence-common"
+          },
+          "expectedActivation": {
+            "phase": "on_enter_node",
+            "nodeId": "evidence-common"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-3",
+      "nodes": [
+        "intro",
+        "scope",
+        "supplier-contact",
+        "evidence-demo",
+        "limited-service"
+      ],
+      "choices": [
+        {
+          "nodeId": "scope",
+          "choiceId": "common-brief"
+        },
+        {
+          "nodeId": "supplier-contact",
+          "choiceId": "bounded-demo"
+        },
+        {
+          "nodeId": "evidence-demo",
+          "choiceId": "document-limits"
+        }
+      ],
+      "ending": "limited-service",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "supply-brief-rework",
+          "scheduledBy": {
+            "nodeId": "scope",
+            "choiceId": "common-brief"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "evidence-demo",
+            "choiceId": "document-limits"
+          }
+        },
+        {
+          "id": "supply-demo-scrutiny",
+          "scheduledBy": {
+            "nodeId": "supplier-contact",
+            "choiceId": "bounded-demo"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "evidence-demo",
+            "choiceId": "document-limits"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-4",
+      "nodes": [
+        "intro",
+        "scope",
+        "supplier-contact",
+        "evidence-demo",
+        "planned-pause"
+      ],
+      "choices": [
+        {
+          "nodeId": "scope",
+          "choiceId": "common-brief"
+        },
+        {
+          "nodeId": "supplier-contact",
+          "choiceId": "bounded-demo"
+        },
+        {
+          "nodeId": "evidence-demo",
+          "choiceId": "broaden-test"
+        }
+      ],
+      "ending": "planned-pause",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "supply-brief-rework",
+          "scheduledBy": {
+            "nodeId": "scope",
+            "choiceId": "common-brief"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "evidence-demo",
+            "choiceId": "broaden-test"
+          }
+        },
+        {
+          "id": "supply-demo-scrutiny",
+          "scheduledBy": {
+            "nodeId": "supplier-contact",
+            "choiceId": "bounded-demo"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "evidence-demo",
+            "choiceId": "broaden-test"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-5",
+      "nodes": [
+        "intro",
+        "scope",
+        "technical-review",
+        "evidence-equivalent",
+        "adapted-solution"
+      ],
+      "choices": [
+        {
+          "nodeId": "scope",
+          "choiceId": "independent-check"
+        },
+        {
+          "nodeId": "technical-review",
+          "choiceId": "verify-equivalent"
+        },
+        {
+          "nodeId": "evidence-equivalent",
+          "choiceId": "conditional-alternative"
+        }
+      ],
+      "ending": "adapted-solution",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "supply-check-reuse",
+          "scheduledBy": {
+            "nodeId": "scope",
+            "choiceId": "independent-check"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "technical-review",
+            "choiceId": "verify-equivalent"
+          }
+        },
+        {
+          "id": "supply-equivalence-report",
+          "scheduledBy": {
+            "nodeId": "technical-review",
+            "choiceId": "verify-equivalent"
+          },
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "evidence-equivalent"
+          },
+          "expectedActivation": {
+            "phase": "on_enter_node",
+            "nodeId": "evidence-equivalent"
+          }
+        },
+        {
+          "id": "supply-adaptation-load",
+          "scheduledBy": {
+            "nodeId": "evidence-equivalent",
+            "choiceId": "conditional-alternative"
+          },
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "adapted-solution"
+          },
+          "expectedActivation": {
+            "phase": "on_enter_node",
+            "nodeId": "adapted-solution"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-6",
+      "nodes": [
+        "intro",
+        "scope",
+        "technical-review",
+        "evidence-equivalent",
+        "revised-requirements"
+      ],
+      "choices": [
+        {
+          "nodeId": "scope",
+          "choiceId": "independent-check"
+        },
+        {
+          "nodeId": "technical-review",
+          "choiceId": "verify-equivalent"
+        },
+        {
+          "nodeId": "evidence-equivalent",
+          "choiceId": "renew-comparison"
+        }
+      ],
+      "ending": "revised-requirements",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "supply-check-reuse",
+          "scheduledBy": {
+            "nodeId": "scope",
+            "choiceId": "independent-check"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "technical-review",
+            "choiceId": "verify-equivalent"
+          }
+        },
+        {
+          "id": "supply-equivalence-report",
+          "scheduledBy": {
+            "nodeId": "technical-review",
+            "choiceId": "verify-equivalent"
+          },
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "evidence-equivalent"
+          },
+          "expectedActivation": {
+            "phase": "on_enter_node",
+            "nodeId": "evidence-equivalent"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-7",
+      "nodes": [
+        "intro",
+        "scope",
+        "technical-review",
+        "evidence-reset",
+        "revised-requirements"
+      ],
+      "choices": [
+        {
+          "nodeId": "scope",
+          "choiceId": "independent-check"
+        },
+        {
+          "nodeId": "technical-review",
+          "choiceId": "hold-requirements"
+        },
+        {
+          "nodeId": "evidence-reset",
+          "choiceId": "revise-needs"
+        }
+      ],
+      "ending": "revised-requirements",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "supply-check-reuse",
+          "scheduledBy": {
+            "nodeId": "scope",
+            "choiceId": "independent-check"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "technical-review",
+            "choiceId": "hold-requirements"
+          }
+        },
+        {
+          "id": "supply-hold-pressure",
+          "scheduledBy": {
+            "nodeId": "technical-review",
+            "choiceId": "hold-requirements"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "evidence-reset",
+            "choiceId": "revise-needs"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-8",
+      "nodes": [
+        "intro",
+        "scope",
+        "technical-review",
+        "evidence-reset",
+        "planned-pause"
+      ],
+      "choices": [
+        {
+          "nodeId": "scope",
+          "choiceId": "independent-check"
+        },
+        {
+          "nodeId": "technical-review",
+          "choiceId": "hold-requirements"
+        },
+        {
+          "nodeId": "evidence-reset",
+          "choiceId": "pause-and-plan"
+        }
+      ],
+      "ending": "planned-pause",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "supply-check-reuse",
+          "scheduledBy": {
+            "nodeId": "scope",
+            "choiceId": "independent-check"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "technical-review",
+            "choiceId": "hold-requirements"
+          }
+        },
+        {
+          "id": "supply-hold-pressure",
+          "scheduledBy": {
+            "nodeId": "technical-review",
+            "choiceId": "hold-requirements"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "evidence-reset",
+            "choiceId": "pause-and-plan"
+          }
+        }
+      ]
+    }
+  ]
+}
