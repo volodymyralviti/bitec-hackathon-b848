@@ -44,8 +44,33 @@ pnpm dev:api
 ```
 
 Клієнт: `http://localhost:4200`; сервер: `http://localhost:3000`.
-Сервер поки повертає `Hello World!` на `GET /`.
-Health API та Angular proxy ще не налаштовані.
+Сервер повертає `Hello World!` на `GET /api` та health-статус на `GET /api/health`:
+
+```json
+{"status":"ok","service":"ethical-dilemmas-api"}
+```
+
+Перевірка напряму й через Angular dev proxy:
+
+```sh
+curl http://localhost:3000/api/health
+curl http://localhost:4200/api/health
+```
+
+Клієнт перевіряє API при відкритті та кнопкою «Перевірити знову».
+Показує завантаження, успіх або зрозумілу помилку. Щоб перевірити недоступність,
+зупиніть API та натисніть кнопку або перезавантажте сторінку.
+Постійного фонового опитування немає.
+
+API вже читає `PORT` із середовища (типово 3000); `.env` автоматично не завантажується.
+Наприклад, у PowerShell: `$env:PORT='3001'; pnpm.cmd dev:api`.
+Якщо порт змінено, відповідно змініть target у `apps/client/proxy.conf.json`
+і перезапустіть Angular dev server. Додаткові environment variables чи секрети не потрібні.
+
+Frontend завжди запитує відносний `/api/health`. Proxy зареєстрований лише для
+dev server та не входить до production bundle. У production вебсервер має
+передавати `/api/*` до NestJS на тому самому origin; dev proxy там не потрібен.
+Широкий CORS не вмикається.
 
 ## Перевірки
 
@@ -75,6 +100,4 @@ migrations та production-збіркою після кожного major. Дл�
 Сумісність: [Angular version matrix](https://angular.dev/reference/versions),
 [Angular migrations](https://angular.dev/cli/update).
 
-Відомі попередження: CSS стандартного Angular-шаблону перевищує warning-бюджет
-2 kB, а серверний `bootstrap()` має ESLint-попередження про необроблений Promise.
 У залежностях залишаються deprecated пакети; їх масове оновлення не виконувалося.
