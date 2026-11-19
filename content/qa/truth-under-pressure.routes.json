@@ -1,0 +1,507 @@
+{
+  "scenarioId": "truth-under-pressure",
+  "version": "1.0.0",
+  "analysis": "Static path evidence only; no engine execution and no substitute for validateScenario.",
+  "nodeCount": 12,
+  "narrativeCount": 1,
+  "decisionNodeCount": 7,
+  "choiceCount": 14,
+  "endingCount": 4,
+  "routeCount": 8,
+  "minDecisions": 3,
+  "maxDecisions": 3,
+  "delayedEventCount": 7,
+  "routes": [
+    {
+      "id": "route-1",
+      "nodes": [
+        "intro",
+        "prepare",
+        "wording-request",
+        "new-context-caveat",
+        "conditional-pilot"
+      ],
+      "choices": [
+        {
+          "nodeId": "prepare",
+          "choiceId": "bounded-memo"
+        },
+        {
+          "nodeId": "wording-request",
+          "choiceId": "lead-with-limit"
+        },
+        {
+          "nodeId": "new-context-caveat",
+          "choiceId": "limited-pilot"
+        }
+      ],
+      "ending": "conditional-pilot",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "truth-late-sample",
+          "scheduledBy": {
+            "nodeId": "prepare",
+            "choiceId": "bounded-memo"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "new-context-caveat",
+            "choiceId": "limited-pilot"
+          }
+        },
+        {
+          "id": "truth-limit-visibility",
+          "scheduledBy": {
+            "nodeId": "wording-request",
+            "choiceId": "lead-with-limit"
+          },
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "new-context-caveat"
+          },
+          "expectedActivation": {
+            "phase": "on_enter_node",
+            "nodeId": "new-context-caveat"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-2",
+      "nodes": [
+        "intro",
+        "prepare",
+        "wording-request",
+        "new-context-caveat",
+        "evidence-pause"
+      ],
+      "choices": [
+        {
+          "nodeId": "prepare",
+          "choiceId": "bounded-memo"
+        },
+        {
+          "nodeId": "wording-request",
+          "choiceId": "lead-with-limit"
+        },
+        {
+          "nodeId": "new-context-caveat",
+          "choiceId": "hold-generalisation"
+        }
+      ],
+      "ending": "evidence-pause",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "truth-late-sample",
+          "scheduledBy": {
+            "nodeId": "prepare",
+            "choiceId": "bounded-memo"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "new-context-caveat",
+            "choiceId": "hold-generalisation"
+          }
+        },
+        {
+          "id": "truth-limit-visibility",
+          "scheduledBy": {
+            "nodeId": "wording-request",
+            "choiceId": "lead-with-limit"
+          },
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "new-context-caveat"
+          },
+          "expectedActivation": {
+            "phase": "on_enter_node",
+            "nodeId": "new-context-caveat"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-3",
+      "nodes": [
+        "intro",
+        "prepare",
+        "wording-request",
+        "new-context-conditions",
+        "qualified-advice"
+      ],
+      "choices": [
+        {
+          "nodeId": "prepare",
+          "choiceId": "bounded-memo"
+        },
+        {
+          "nodeId": "wording-request",
+          "choiceId": "lead-with-conditions"
+        },
+        {
+          "nodeId": "new-context-conditions",
+          "choiceId": "versioned-clarification"
+        }
+      ],
+      "ending": "qualified-advice",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "truth-late-sample",
+          "scheduledBy": {
+            "nodeId": "prepare",
+            "choiceId": "bounded-memo"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "new-context-conditions",
+            "choiceId": "versioned-clarification"
+          }
+        },
+        {
+          "id": "truth-conditions-quote",
+          "scheduledBy": {
+            "nodeId": "wording-request",
+            "choiceId": "lead-with-conditions"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "new-context-conditions",
+            "choiceId": "versioned-clarification"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-4",
+      "nodes": [
+        "intro",
+        "prepare",
+        "wording-request",
+        "new-context-conditions",
+        "recorded-reservation"
+      ],
+      "choices": [
+        {
+          "nodeId": "prepare",
+          "choiceId": "bounded-memo"
+        },
+        {
+          "nodeId": "wording-request",
+          "choiceId": "lead-with-conditions"
+        },
+        {
+          "nodeId": "new-context-conditions",
+          "choiceId": "formal-note"
+        }
+      ],
+      "ending": "recorded-reservation",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "truth-late-sample",
+          "scheduledBy": {
+            "nodeId": "prepare",
+            "choiceId": "bounded-memo"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "new-context-conditions",
+            "choiceId": "formal-note"
+          }
+        },
+        {
+          "id": "truth-conditions-quote",
+          "scheduledBy": {
+            "nodeId": "wording-request",
+            "choiceId": "lead-with-conditions"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "new-context-conditions",
+            "choiceId": "formal-note"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-5",
+      "nodes": [
+        "intro",
+        "prepare",
+        "review-request",
+        "new-context-interim",
+        "conditional-pilot"
+      ],
+      "choices": [
+        {
+          "nodeId": "prepare",
+          "choiceId": "peer-window"
+        },
+        {
+          "nodeId": "review-request",
+          "choiceId": "interim-options"
+        },
+        {
+          "nodeId": "new-context-interim",
+          "choiceId": "test-access"
+        }
+      ],
+      "ending": "conditional-pilot",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "truth-peer-findings",
+          "scheduledBy": {
+            "nodeId": "prepare",
+            "choiceId": "peer-window"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "review-request",
+            "choiceId": "interim-options"
+          }
+        },
+        {
+          "id": "truth-interim-received",
+          "scheduledBy": {
+            "nodeId": "review-request",
+            "choiceId": "interim-options"
+          },
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "new-context-interim"
+          },
+          "expectedActivation": {
+            "phase": "on_enter_node",
+            "nodeId": "new-context-interim"
+          }
+        },
+        {
+          "id": "truth-pilot-workload",
+          "scheduledBy": {
+            "nodeId": "new-context-interim",
+            "choiceId": "test-access"
+          },
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "conditional-pilot"
+          },
+          "expectedActivation": {
+            "phase": "on_enter_node",
+            "nodeId": "conditional-pilot"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-6",
+      "nodes": [
+        "intro",
+        "prepare",
+        "review-request",
+        "new-context-interim",
+        "evidence-pause"
+      ],
+      "choices": [
+        {
+          "nodeId": "prepare",
+          "choiceId": "peer-window"
+        },
+        {
+          "nodeId": "review-request",
+          "choiceId": "interim-options"
+        },
+        {
+          "nodeId": "new-context-interim",
+          "choiceId": "targeted-data"
+        }
+      ],
+      "ending": "evidence-pause",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "truth-peer-findings",
+          "scheduledBy": {
+            "nodeId": "prepare",
+            "choiceId": "peer-window"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "review-request",
+            "choiceId": "interim-options"
+          }
+        },
+        {
+          "id": "truth-interim-received",
+          "scheduledBy": {
+            "nodeId": "review-request",
+            "choiceId": "interim-options"
+          },
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "new-context-interim"
+          },
+          "expectedActivation": {
+            "phase": "on_enter_node",
+            "nodeId": "new-context-interim"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-7",
+      "nodes": [
+        "intro",
+        "prepare",
+        "review-request",
+        "new-context-briefing",
+        "qualified-advice"
+      ],
+      "choices": [
+        {
+          "nodeId": "prepare",
+          "choiceId": "peer-window"
+        },
+        {
+          "nodeId": "review-request",
+          "choiceId": "method-briefing"
+        },
+        {
+          "nodeId": "new-context-briefing",
+          "choiceId": "joint-summary"
+        }
+      ],
+      "ending": "qualified-advice",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "truth-peer-findings",
+          "scheduledBy": {
+            "nodeId": "prepare",
+            "choiceId": "peer-window"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "review-request",
+            "choiceId": "method-briefing"
+          }
+        },
+        {
+          "id": "truth-briefing-record",
+          "scheduledBy": {
+            "nodeId": "review-request",
+            "choiceId": "method-briefing"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "new-context-briefing",
+            "choiceId": "joint-summary"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route-8",
+      "nodes": [
+        "intro",
+        "prepare",
+        "review-request",
+        "new-context-briefing",
+        "recorded-reservation"
+      ],
+      "choices": [
+        {
+          "nodeId": "prepare",
+          "choiceId": "peer-window"
+        },
+        {
+          "nodeId": "review-request",
+          "choiceId": "method-briefing"
+        },
+        {
+          "nodeId": "new-context-briefing",
+          "choiceId": "separate-position"
+        }
+      ],
+      "ending": "recorded-reservation",
+      "decisionCount": 3,
+      "expectedDelayed": [
+        {
+          "id": "truth-peer-findings",
+          "scheduledBy": {
+            "nodeId": "prepare",
+            "choiceId": "peer-window"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "review-request",
+            "choiceId": "method-briefing"
+          }
+        },
+        {
+          "id": "truth-briefing-record",
+          "scheduledBy": {
+            "nodeId": "review-request",
+            "choiceId": "method-briefing"
+          },
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expectedActivation": {
+            "phase": "after_decision",
+            "nodeId": "new-context-briefing",
+            "choiceId": "separate-position"
+          }
+        }
+      ]
+    }
+  ]
+}

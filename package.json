@@ -1,0 +1,27 @@
+{
+  "name": "ethical-dilemmas-simulator",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.0.0",
+  "engines": {
+    "node": ">=22.22.3 <23",
+    "pnpm": "10.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "esbuild",
+      "lmdb",
+      "msgpackr-extract"
+    ]
+  },
+  "scripts": {
+    "dev:web": "pnpm --filter client start",
+    "dev:api": "pnpm --filter server start:dev",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r --workspace-concurrency=1 run test && pnpm run test:e2e",
+    "test:e2e": "pnpm --filter server run test:e2e",
+    "typecheck": "pnpm --filter @eds/scenario-schema build && pnpm -r run typecheck",
+    "lint": "pnpm --filter @eds/scenario-schema build && pnpm --filter @eds/scenario-schema lint && pnpm --filter server run lint"
+  }
+}
