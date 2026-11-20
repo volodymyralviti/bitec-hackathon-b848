@@ -53,10 +53,30 @@ async function cdp(url) {
   const send = (method, params = {}) => new Promise((resolve, reject) => { const id = ++serial; pending.set(id, { resolve, reject }); socket.send(JSON.stringify({ id, method, params })); });
   const evaluate = async expression => { const result = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }); if (result.exceptionDetails) throw Error(JSON.stringify(result.exceptionDetails)); return result.result.value; };
   const screenshot = async name => fs.writeFileSync(path.join(artifacts, name + '.png'), Buffer.from((await send('Page.captureScreenshot', { format: 'png' })).data, 'base64'));
-  const wait = async expression => { for (let attempt = 0; attempt < 250; attempt++) { if (await evaluate(expression)) return; await sleep(40); } await screenshot('classroom-failure'); throw Error('Timeout: ' + expression + '\n' + await evaluate('document.body.innerText.slice(0,2500)')); };
-  const click = selector => evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);
+  const wait = async expression => {
+    for (let attempt = 0; attempt < 250; attempt++) { if (await evaluate(expression)) return; await sleep(40); }
+    await screenshot('classroom-failure');
+    // Report control states, never the page text containing a PIN/capability.
+    const state = await evaluate(`({
+      controls: Object.fromEntries(['create','join','open','close','advance','vote'].map(action => {
+        const button = document.querySelector('[data-classroom-action="' + action + '"]');
+        return [action, button ? { disabled: button.disabled } : null];
+      })),
+      choices: document.querySelectorAll('[data-classroom-choice]').length,
+      voteRecorded: !!document.querySelector('[data-vote-recorded]'),
+      aggregate: !!document.querySelector('[data-classroom-results]'),
+      debrief: !!document.querySelector('[data-classroom-debrief]'),
+      error: !!document.querySelector('[data-classroom-error]')
+    })`);
+    throw Error('Timeout: ' + expression + '\n' + JSON.stringify(state));
+  };
+  // Broadcasts can render a control before the command acknowledgement clears busy.
+  // Native click()/Enter on a disabled button is ignored; presence alone is insufficient.
+  const enabled = selector => wait(`!!document.querySelector(${JSON.stringify(selector)}) && !document.querySelector(${JSON.stringify(selector)}).disabled`);
+  const click = async selector => { await enabled(selector); return evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`); };
   const fill = (selector, value) => evaluate(`(() => {const node=document.querySelector(${JSON.stringify(selector)});node.value=${JSON.stringify(value)};node.dispatchEvent(new Event('input',{bubbles:true}));node.dispatchEvent(new Event('change',{bubbles:true}));})()`);
   const enter = async selector => {
+    await enabled(selector);
     await evaluate(`document.querySelector(${JSON.stringify(selector)}).focus()`);
     await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13, text: '\r', unmodifiedText: '\r' });
     await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
@@ -75,6 +95,11 @@ try {
     const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
     const client = await cdp(targets.find(item => item.id === target.targetId).webSocketDebuggerUrl);
     await client.send('Runtime.enable'); await client.send('Log.enable'); await client.send('Page.enable');
+    if (process.env.SMOKE_CPU_RATE) {
+      const rate = Number(process.env.SMOKE_CPU_RATE);
+      assert.ok(Number.isFinite(rate) && rate >= 1 && rate <= 20, 'SMOKE_CPU_RATE must be between 1 and 20');
+      await client.send('Emulation.setCPUThrottlingRate', { rate });
+    }
     await client.send('Emulation.setDeviceMetricsOverride', { width: mobile ? 360 : 1280, height: mobile ? 800 : 960, deviceScaleFactor: 1, mobile });
     await client.send('Page.navigate', { url }); return client;
   }
