@@ -3,6 +3,10 @@
 NestJS 11 / Express / CommonJS. Stage 06 adds versioned Scenario API and protected Studio storage.
 See the [root README](../../README.md) for Node 22.22.3 / pnpm 10 setup.
 
+Stage 07 also provides an in-memory Socket.IO classroom, separate from Studio persistence.
+See [Classroom protocol, privacy and tests](src/classroom/README.md). No participant data is
+written to the scenario store. Author/reviewer capabilities do not control classroom rooms.
+
 ## Run and access
 
 Build workspace packages first (`pnpm build`), then `pnpm dev:api` or

@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+  { path: 'classroom/host', data: { host: true }, title: 'Ведучий · Аудиторне заняття', loadComponent: () => import('./classroom/classroom.component').then(module => module.ClassroomComponent) },
+  { path: 'classroom/join/:pin', title: 'Учасник · Аудиторне заняття', loadComponent: () => import('./classroom/classroom.component').then(module => module.ClassroomComponent) },
+  { path: 'classroom/join', title: 'Учасник · Аудиторне заняття', loadComponent: () => import('./classroom/classroom.component').then(module => module.ClassroomComponent) },
   { path: '', pathMatch: 'full', redirectTo: 'scenarios' },
   { path: 'scenarios', title: 'Сценарії · Точка рішення', loadComponent: () => import('./catalog/catalog.component').then(module => module.CatalogComponent) },
   { path: 'studio/preview', title: 'Приватний preview · Studio', loadChildren: () => import('./scenario-studio/studio.routes').then(module => module.STUDIO_PREVIEW_ROUTES) },

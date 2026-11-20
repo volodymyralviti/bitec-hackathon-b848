@@ -10,6 +10,7 @@ import {
 } from './scenario.controller';
 
 @Module({
+  exports: [ScenarioService],
   controllers: [
     PublicScenarioController,
     AuthorScenarioController,

@@ -14,6 +14,14 @@ Stage 06 додає NestJS Scenario API та захищений form-based Studi
 сховище для одного процесу, без даних учасників. Налаштування, API та обмеження:
 [server README](apps/server/README.md).
 
+Stage 07 додає аудиторне заняття: `/classroom/host` для ведучого та
+`/classroom/join` або `/classroom/join/:pin` для учасників. Socket.IO синхронізує
+одну спільну engine-гілку; індивідуальних звітів і live-підрахунку немає.
+Після закриття точний агрегат доступний лише за ≥3 поданих голосів.
+Кімнати, токени та поточні голоси живуть лише в пам’яті й очищаються за TTL.
+Протокол, запуск, reconnect і межі анонімності:
+[Classroom README](apps/server/src/classroom/README.md).
+
 ## Структура
 
 ```text

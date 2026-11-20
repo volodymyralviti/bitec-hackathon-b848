@@ -1,6 +1,35 @@
 ﻿# Angular Solo Simulator — Stage 05
 
-## Stage 06 — поточний стан API та Studio
+## Stage 07 — аудиторне заняття
+
+Ведучий відкриває `/classroom/host`, обирає сценарій і ділиться PIN/посиланням
+`/classroom/join/:pin`. Учасник приєднується без імені та підтверджує один голос
+у раунді. Ведучий закриває раунд, обговорює агрегат і явно обирає спільну гілку.
+До закриття немає розподілу чи лічильника; за 1–2 голосів точні результати приховані.
+
+Signals відображають безпечний стан сервера. Усі переходи та наслідки формує
+сервер через наявний engine; frontend не рахує голосів чи метрик.
+Socket.IO працює на `/api/classroom-socket`, dev proxy має `ws:true`.
+Потрібні запущені API й Angular. Ключ ведучого генерує сервер; його немає
+в participant URL, bundle чи browser storage. Reconnect тієї самої вкладки
+використовує тимчасовий токен; reload втрачає доступ. Поки ведучий відключений,
+голоси не приймаються. Перший голос остаточний, повтор не збільшує підрахунок.
+
+```powershell
+$env:CHROME_BIN='C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'
+pnpm build
+pnpm test
+node apps/client/scripts/smoke-classroom.mjs
+```
+
+Smoke використовує реальний NestJS і чотири ізольовані browser contexts:
+host + три учасники, три раунди до debrief, окрему кімнату з двома голосами,
+клавіатуру, mobile 360px та console errors. Нових browser dependencies немає.
+Докладний [контракт і privacy caveats](../server/src/classroom/README.md).
+Це один серверний процес із volatile кімнатами, не захист від Sybil-клієнтів
+або мережевого спостереження. Classroom не додає реєстрації чи індивідуальної аналітики.
+
+## Stage 06 — API та Studio (попередній етап)
 
 Поточна гілка `scenario_api`. Збережено попередні staged зміни Stage 05.
 Наведений нижче звіт Stage 05 є історичним; цей розділ замінює його твердження
