@@ -4,7 +4,9 @@
 `schemaVersion: "1"`, `version: "1.0.0"`, `publicationStatus: "draft"`,
 `contentReview: {status: "draft", demoOnly: true, aiAssisted: true}`.
 Це матеріал для content review, а не експертно схвалена публікація чи юридична порада.
-Автоматичне завантаження в публічний каталог не налаштовувалось.
+API на першому запуску копіює лише явний `index.json` у demo-only каталог;
+публічна копія має `publicationStatus=demo`, а ці оригінали залишаються draft.
+Це технічний показ демо, без зміни людського review чи перевірки джерел.
 
 | Файл | Сюжет | Вузли | Decision nodes | Choices | Endings | Повні маршрути | Рішень на маршрут |
 |---|---|---:|---:|---:|---:|---:|---:|
