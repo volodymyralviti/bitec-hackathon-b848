@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import type { Scenario } from '@eds/scenario-schema';
 
 export interface StudioRecord { scenario: Scenario; revision: number; createdAt: string; updatedAt: string }
-export interface StudioIssue { path: (string | number)[]; code: string; message: string }
+export interface StudioIssue { path: (string | number)[]; code: string; message: string; severity?: 'ERROR' | 'WARNING' | 'INFO' }
 
 @Injectable({ providedIn: 'root' })
 export class StudioApi {

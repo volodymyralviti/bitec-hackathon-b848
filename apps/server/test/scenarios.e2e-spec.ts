@@ -58,6 +58,72 @@ describe('Protected Scenario API', () => {
     await app.close();
   });
 
+  it('preserves legal source metadata in private import/export without promoting review', async () => {
+    const scenario = fresh('legal-metadata-private');
+    Object.assign(scenario.sources[0], {
+      sourceType: 'normative',
+      documentType: 'judgment',
+      court: 'Тестовий суд',
+      caseNumber: 'TEST',
+      legalPosition: 'Синтетична позиція для тесту.',
+      documentNumber: 'TEST',
+      documentDate: '2025-01-01',
+      relevance: 'Тестове пояснення релевантності.',
+      applicabilityQuestions: 'Потребує перевірки фахівцем.',
+      expertReviewRequired: true,
+    });
+    await client()
+      .post('/api/author/scenarios/import')
+      .set(auth)
+      .send(scenario)
+      .expect(201);
+    const response = await client()
+      .get('/api/author/scenarios/legal-metadata-private/1.0.0/export')
+      .set(auth)
+      .expect(200);
+    expect(response.body).toEqual(scenario);
+    await client().get('/api/scenarios/legal-metadata-private').expect(404);
+    await client()
+      .get('/api/author/scenarios/legal-metadata-private/1.0.0/export')
+      .expect(401);
+  });
+
+  it('rejects client-forged expert review even with an author capability', async () => {
+    const scenario = fresh('forged-source-approval');
+    scenario.sources[0].verificationStatus = 'expert_checked';
+    scenario.sources[0].verifiedAt = '2026-01-01';
+    scenario.sources[0].revision = 'Синтетична редакція';
+    scenario.sources[0].verificationEvidence = 'Підроблена клієнтська позначка';
+    await client()
+      .post('/api/author/scenarios/import')
+      .set(auth)
+      .send(scenario)
+      .expect(422);
+    await client()
+      .post('/api/author/scenarios/import')
+      .send(scenario)
+      .expect(401);
+    scenario.sources[0].verificationStatus = 'unverified';
+    scenario.sources[0].verifiedAt = null;
+    scenario.contentReview = {
+      ...scenario.contentReview,
+      status: 'expert_approved',
+      reviewedAt: '2026-01-01T00:00:00Z',
+      reviewerRole: 'Підроблена роль',
+      evidenceRef: 'Підроблений запис',
+    };
+    await client()
+      .post('/api/author/scenarios/import')
+      .set(auth)
+      .send(scenario)
+      .expect(422);
+    await client()
+      .post('/api/reviewer/scenarios/forged-source-approval/1.0.0/review')
+      .set(auth)
+      .send({ humanAttestation: true })
+      .expect(401);
+  });
+
   it('serves only explicit demo seeds and no private draft', async () => {
     const response = await client().get('/api/scenarios').expect(200);
     const list = response.body as Scenario[];
@@ -275,8 +341,9 @@ describe('Protected Scenario API', () => {
     // Stub ONLY a reviewer acting on a synthetic test fixture. No CIDS/legal source is approved.
     const scenario = fresh('test-only-human-review-stub');
     scenario.contentReview.status = 'in_review';
-    // A team-checked test normative citation is enough to exercise lawful-status invalidation.
-    // This is synthetic test data, not a claim about any Ukrainian law.
+    // Only the protected reviewer can assess a definite legalStatus in Stage 10B.
+    // These particulars are synthetic test data, not a Ukrainian legal citation.
+    scenario.contentCreatedAt = '2026-11-20';
     scenario.sources[0] = {
       ...scenario.sources[0],
       sourceType: 'normative',
@@ -286,10 +353,15 @@ describe('Protected Scenario API', () => {
       revision: 'TEST ONLY synthetic rule',
       issuer: 'TEST ONLY synthetic issuing body',
       pinpoint: 'TEST ONLY section 1',
+      documentType: 'other',
+      documentDate: '2026-11-20',
+      url: 'https://example.org/test-only',
+      relevance: 'TEST ONLY synthetic applicability',
+      verificationEvidence: 'test-only://synthetic-source-record',
     };
     const decision = scenario.nodes.find((node) => node.type === 'decision')!;
     if (decision.type === 'decision') {
-      decision.choices[0].legalStatus = 'allowed';
+      decision.choices[0].legalStatus = 'uncertain';
       decision.choices[0].sourceIds = [scenario.sources[0].sourceId];
     }
     await client()
@@ -306,6 +378,16 @@ describe('Protected Scenario API', () => {
       reviewedAt: '2026-11-20T00:00:00Z',
       reviewerRole: 'TEST ONLY reviewer stub',
       evidenceRef: 'test-only://synthetic-review-stub',
+      legalAssessments:
+        decision.type === 'decision'
+          ? [
+              {
+                nodeId: decision.id,
+                choiceId: decision.choices[0].id,
+                legalStatus: 'allowed',
+              },
+            ]
+          : [],
       sources: scenario.sources.map((source) => ({
         ...source,
         verificationStatus: 'expert_checked',
@@ -313,6 +395,22 @@ describe('Protected Scenario API', () => {
         revision: 'TEST ONLY fixture revision',
       })),
     };
+    for (const legalAssessments of [
+      [{ nodeId: 'missing', choiceId: 'missing', legalStatus: 'allowed' }],
+      [
+        ...testOnlyHumanReviewerStub.legalAssessments,
+        ...testOnlyHumanReviewerStub.legalAssessments,
+      ],
+      [{ nodeId: decision.id, choiceId: 'missing', legalStatus: 'permitted' }],
+    ]) {
+      await client()
+        .post(
+          '/api/reviewer/scenarios/test-only-human-review-stub/1.0.0/review',
+        )
+        .set(reviewAuth)
+        .send({ ...testOnlyHumanReviewerStub, legalAssessments })
+        .expect(422);
+    }
     await client()
       .post('/api/reviewer/scenarios/test-only-human-review-stub/1.0.0/review')
       .set(reviewAuth)
@@ -331,6 +429,13 @@ describe('Protected Scenario API', () => {
       .get('/api/scenarios/test-only-human-review-stub?version=1.0.0')
       .expect(200);
     expect((before.body as Scenario).publicationStatus).toBe('published');
+    const reviewedDecision = (before.body as Scenario).nodes.find(
+      (node) => node.type === 'decision',
+    );
+    expect(
+      reviewedDecision?.type === 'decision' &&
+        reviewedDecision.choices[0].legalStatus,
+    ).toBe('allowed');
     await client()
       .put('/api/author/scenarios/test-only-human-review-stub/1.0.0')
       .set(auth)

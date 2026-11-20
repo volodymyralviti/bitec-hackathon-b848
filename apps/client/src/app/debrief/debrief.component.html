@@ -51,6 +51,11 @@
       <aside class="learning-note"><h2>Межі інтерпретації</h2><p>{{ report.limitations }}</p></aside>
     </section>
     <app-sources [sources]="sources()" />
+    @if (legalQuestions().length) {
+      <section class="reading-panel"><h2>Невирішені правові питання фактичного маршруту</h2>
+        <ul>@for (question of legalQuestions(); track $index) { <li><strong>{{ question.label }}:</strong> {{ question.text }}</li> }</ul>
+      </section>
+    }
     <div class="actions">
       <button type="button" class="button" data-action="restart" (click)="restart()">Спробувати інший маршрут</button>
       <a [routerLink]="navigation.back" class="button button-secondary">{{ navigation.backLabel }}</a>

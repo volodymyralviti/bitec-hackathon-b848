@@ -90,6 +90,22 @@ try {
   await field('nodes.1.choices.2.label', 'Підготувати поетапний запуск');
   await field('nodes.1.choices.2.nextNodeId', 'decision-2');
   await field('nodes.1.choices.2.explanation', 'Дає ранній доступ до частини матеріалу, але створює додаткову роботу з пояснення меж пілоту.');
+  // Synthetic source tests the legal editor without inventing a real act or approval.
+  const sourceIndex = await evaluate('document.querySelectorAll(\'[data-field-path$=".sourceId"]\').length');
+  await click('[data-add="sources"]');
+  await field(`sources.${sourceIndex}.sourceId`, 'smoke-source');
+  await field(`sources.${sourceIndex}.title`, 'Синтетичне нормативне джерело — лише тест форми');
+  await field(`sources.${sourceIndex}.sourceType`, 'normative');
+  await field(`sources.${sourceIndex}.documentType`, 'other');
+  await field(`sources.${sourceIndex}.pinpoint`, 'Синтетичний пункт 1, не реальна правова норма');
+  await field(`sources.${sourceIndex}.versionAsOf`, '2025-01-01');
+  await field(`sources.${sourceIndex}.revision`, 'Синтетична редакція для smoke test');
+  await field(`sources.${sourceIndex}.relevance`, 'Перевірка зв’язків джерела, не юридичне твердження.');
+  await field(`sources.${sourceIndex}.url`, 'https://zakon.rada.gov.ua/');
+  const refIndex = await evaluate('document.querySelectorAll(\'select[data-field-path^="nodes.1.choices.0.sourceIds."]\').length');
+  await click('[data-add="nodes.1.choices.0.sourceIds"]');
+  await field(`nodes.1.choices.0.sourceIds.${refIndex}`, 'smoke-source');
+  await field('nodes.1.choices.0.legalStatus', 'uncertain');
   // Broken graph is rejected before any private save/public exposure.
   await field('startNodeId', 'ending-a'); await click('[data-action=save-draft]');
   await wait('document.body.innerText.includes("TOO_SHORT_PATH")');
@@ -114,6 +130,8 @@ try {
   const exported = JSON.parse(fs.readFileSync(exportedFile, 'utf8'));
   assert.equal(exported.nodes.filter(node => node.type === 'decision').length, 3);
   assert.equal(JSON.stringify(exported).includes(api.authorKey), false);
+  assert.equal(exported.sources.at(-1).verificationStatus, 'unverified');
+  assert.equal(exported.sources.at(-1).revision, 'Синтетична редакція для smoke test');
   await click('[data-action=preview]'); await wait('!!document.querySelector("[data-action=advance]")');
   assert.equal(await evaluate('document.body.innerText.includes("Приватний preview")'), true);
   await click('[data-action=advance]');
@@ -124,6 +142,21 @@ try {
   await wait(`!!document.querySelector('a[href="/studio/preview/browser-authored/debrief"]')`);
   await click('a[href="/studio/preview/browser-authored/debrief"]');
   await wait('document.querySelectorAll(".decision-history li").length === 3');
+  assert.equal(await evaluate('!!document.querySelector(\'[data-source-id="smoke-source"]\')'), true);
+  assert.equal(await evaluate('document.body.textContent.includes("Правову застосовність цього джерела ще не підтверджено")'), true);
+  await click('[data-source-id="smoke-source"] summary');
+  const legalLink = await evaluate('document.querySelector(\'[data-source-id="smoke-source"] a\').href');
+  assert.equal(legalLink, 'https://zakon.rada.gov.ua/');
+  await send('Runtime.evaluate', { expression: 'document.querySelector(\'[data-source-id="smoke-source"] a\').click()', userGesture: true });
+  // Opening a new tab is a UI check, never source/content verification.
+  let officialTab;
+  for (let attempt = 0; !officialTab && attempt < 30; attempt++) {
+    const openedTargets = await send('Target.getTargets');
+    officialTab = openedTargets.targetInfos.find(target => target.url.startsWith('https://zakon.rada.gov.ua/'));
+    if (!officialTab) await sleep(100);
+  }
+  assert.ok(officialTab, 'Official URL should open in a separate tab');
+  await send('Target.closeTarget', { targetId: officialTab.targetId });
   await screenshot('studio-private-debrief');
   assert.equal((await fetch(api.origin + '/api/scenarios/browser-authored')).status, 404);
   await click('.back-link'); await wait('!!document.querySelector("[data-action=export]")');

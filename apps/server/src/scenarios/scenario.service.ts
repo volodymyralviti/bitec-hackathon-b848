@@ -18,6 +18,56 @@ import {
   ScenarioStore,
   type ScenarioRecord,
 } from './scenario-store';
+import { z } from 'zod';
+
+const legalAssessmentsSchema = z
+  .array(
+    z.strictObject({
+      nodeId: z.string().min(1).max(80),
+      choiceId: z.string().min(1).max(80),
+      legalStatus: z.enum(['allowed', 'restricted', 'uncertain']),
+    }),
+  )
+  .max(8192);
+
+function reviewedNodes(scenario: Scenario, input: unknown): Scenario['nodes'] {
+  if (input === undefined) return scenario.nodes;
+  const parsed = legalAssessmentsSchema.safeParse(input);
+  if (!parsed.success)
+    invalid(
+      'INVALID_LEGAL_ASSESSMENT',
+      ['legalAssessments'],
+      'Потрібні точні nodeId, choiceId та правовий статус.',
+    );
+  const assessments = new Map<string, 'allowed' | 'restricted' | 'uncertain'>();
+  for (const item of parsed.data) {
+    const node = scenario.nodes.find((node) => node.id === item.nodeId);
+    const key = `${item.nodeId}/${item.choiceId}`;
+    if (
+      node?.type !== 'decision' ||
+      !node.choices.some((choice) => choice.id === item.choiceId) ||
+      assessments.has(key)
+    ) {
+      invalid(
+        'INVALID_LEGAL_ASSESSMENT',
+        ['legalAssessments'],
+        'Оцінка має посилатися на унікальний існуючий choice.',
+      );
+    }
+    assessments.set(key, item.legalStatus);
+  }
+  return scenario.nodes.map((node) =>
+    node.type === 'decision'
+      ? {
+          ...node,
+          choices: node.choices.map((choice) => {
+            const legalStatus = assessments.get(`${node.id}/${choice.id}`);
+            return legalStatus ? { ...choice, legalStatus } : choice;
+          }),
+        }
+      : node,
+  );
+}
 
 function invalid(
   code: string,
@@ -326,6 +376,7 @@ export class ScenarioService {
           ...record.scenario,
           contentReview: parsed.data,
           sources: body.sources ?? record.scenario.sources,
+          nodes: reviewedNodes(record.scenario, body.legalAssessments),
         }),
       );
     });

@@ -5,6 +5,21 @@ database, simulation runtime, learner records or AI provider in library code.
 Zod 4.6.6 is the only runtime dependency. Package version: `0.1.0`; wire format:
 `schemaVersion: "1"`. Test fixtures are synthetic, demo-only and unreviewed.
 
+## Stage 10B — optional legal metadata
+
+Optional source fields: documentType
+(law/code/statute/order/procedure/ethics/methodology/judgment/other), documentNumber,
+relevance, applicabilityQuestions, verificationEvidence, expertReviewRequired,
+court, caseNumber, legalPosition; optional choice legalQuestions and scenario
+contentCreatedAt (ISO date of this version). Existing JSON is valid unchanged;
+ESM/CJS exports remain unchanged. See [ADR 0002](../../docs/adr/0002-legal-source-metadata.md).
+New diagnostics may carry ERROR/WARNING/INFO; INFO remains in warnings.
+Incomplete unverified legal drafts warn; contradictory dates/classification fail.
+Checked normative sources need evidence. Definite legalStatus requires expert_checked
+normative references with evidence/relevance. Publication needs full normative
+metadata and human review; expertReviewRequired=false cannot waive it.
+Validation never authenticates reviewers, fetches URLs or gives legal advice.
+
 ## Usage
 
 ```ts

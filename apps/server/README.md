@@ -1,6 +1,19 @@
 # Server
 
 NestJS 11 / Express / CommonJS. Stage 06 adds versioned Scenario API and protected Studio storage.
+
+## Stage 10B — source metadata
+
+Existing protected import/create/update/validate/export routes preserve optional
+DSL v1 legal metadata. See [author instructions](../../docs/LEGAL_SOURCES_UA.md)
+and [ADR 0002](../../docs/adr/0002-legal-source-metadata.md).
+New diagnostic severity is ERROR/WARNING/INFO; INFO stays in warnings for wire
+compatibility. Legacy diagnostics inherit their collection. Draft warnings do not
+block storage. Publication requires complete normative metadata, evidence, content
+creation date and the existing human review gate. Definite legalStatus requires
+an expert_checked normative source with relevance/evidence. Authors cannot submit
+expert_checked/expert_approved. No URL is fetched server-side; format does not
+imply availability, source verification or expert applicability. No SSRF endpoint.
 See the [root README](../../README.md) for Node 22.22.3 / pnpm 10 setup.
 
 Stage 07 also provides an in-memory Socket.IO classroom, separate from Studio persistence.
@@ -85,11 +98,17 @@ uses the reviewer capability. The review request requires:
 ```text
 expectedRevision, humanAttestation:true, decision:expert_approved|changes_requested,
 demoOnly, aiAssisted (unchanged), reviewedAt, reviewerRole, evidenceRef,
-sources (optional complete source array with factual verification metadata)
+sources (optional complete source array with factual verification metadata),
+legalAssessments (optional [{nodeId, choiceId, legalStatus}])
 ```
 
 Provide real review evidence and a public-safe role description; do not enter names or protected
 information. No automatic reviewer, fake sign-off or normative reference is generated.
+Stage 10B permits only the protected reviewer to set a definite choice legalStatus
+through legalAssessments (allowed/restricted/uncertain). Unknown choices, duplicate
+assessments and unsupported statuses fail with 422. The shared validator then checks
+expert_checked normative evidence/relevance. Review cannot alter narrative, targets,
+metrics or delayed triggers through this field. Authors submit uncertain until reviewed.
 Publication separately requires `expert_approved`, `demoOnly=false`, and all sources
 `expert_checked`, as enforced by the shared provenance contract. A secret cannot establish
 professional qualifications: its distribution and evidence verification remain a human process.
