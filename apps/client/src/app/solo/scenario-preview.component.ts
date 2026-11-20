@@ -7,7 +7,7 @@ import { ScenarioLoadError, ScenarioRepository } from '../core/scenarios/scenari
 import { ScenarioStatusComponent } from '../shared/ui/scenario-status.component';
 import { SourcesComponent } from '../shared/ui/sources.component';
 
-// Preview only: Stage 03 is absent. Do not implement simulation fallback here.
+// Read-only introduction and sources; transitions live exclusively in SoloSession.
 @Component({
   selector: 'app-scenario-preview',
   imports: [RouterLink, ScenarioStatusComponent, SourcesComponent],
@@ -28,8 +28,9 @@ import { SourcesComponent } from '../shared/ui/sources.component';
         </section>
       }
       <section class="state-panel" role="status">
-        <h2>Проходження тимчасово недоступне</h2>
-        <p>Вступ і джерела можна переглянути зараз. Рішення ще не прийнято; підсумку проходження немає.</p>
+        <h2>Готові дослідити ситуацію?</h2>
+        <p>Вступ і джерела доступні без прийняття рішень. У проходженні ви побачите наслідки лише обраного маршруту.</p>
+        <a [routerLink]="['/scenarios', current.id, 'play']" class="button">Відкрити проходження</a>
         <a routerLink="/scenarios" class="button button-secondary">Повернутися до сценаріїв</a>
       </section>
       <app-sources [sources]="current.sources" />

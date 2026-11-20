@@ -31,5 +31,6 @@ coverage/
 /docs/SOURCE_TRACEABILITY.md
 
 # Local
+.data/
 .DS_Store
 *.log

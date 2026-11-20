@@ -1,0 +1,65 @@
+<a [routerLink]="navigation.back" class="back-link">← {{ navigation.backLabel }}</a>
+@if (navigation.privatePreview) { <p class="learning-note" role="status">Приватний preview. Результат не публікується й не надсилається на сервер.</p> }
+@if (status() === 'loading') {
+  <p class="state-panel" role="status">Завантажуємо матеріал для розбору…</p>
+} @else if (status() !== 'ready') {
+  <section class="state-panel" role="alert">
+    <h1>{{ status() === 'not-found' ? 'Сценарій не знайдено' : 'Не вдалося завантажити матеріал' }}</h1>
+    <a [routerLink]="navigation.back" class="button">{{ navigation.backLabel }}</a>
+  </section>
+} @else if (scenario(); as scenario) {
+  <header class="page-heading">
+    <p class="eyebrow">Розбір рішень · версія {{ scenario.version }}</p>
+    <h1 class="scenario-title">{{ scenario.title }}</h1>
+    <app-scenario-status [scenario]="scenario" />
+  </header>
+  @if (report(); as report) {
+    <section class="reading-panel" aria-labelledby="outcome-heading">
+      <h2 id="outcome-heading">{{ report.endingTitle }}</h2>
+      <p class="lead">{{ report.explanation.summary }}</p>
+      <ul class="value-list" aria-label="Цінності в напрузі">
+        @for (value of report.valuesInTension; track $index) { <li>{{ value }}</li> }
+      </ul>
+      <h2>У короткій перспективі</h2><p>{{ report.explanation.shortTerm }}</p>
+      <h2>У довгій перспективі</h2><p>{{ report.explanation.longTerm }}</p>
+      <h2>Погляди різних сторін</h2>
+      <ul>@for (perspective of report.explanation.perspectives; track $index) { <li>{{ perspective }}</li> }</ul>
+      <h2>Довіра та репутація</h2><p>{{ report.explanation.trustAndReputation }}</p>
+    </section>
+    <section class="progress-panel" aria-labelledby="final-dimensions-heading">
+      <h2 id="final-dimensions-heading">Фінальні виміри наслідків</h2>
+      <app-dimensions [values]="report.finalMetrics" />
+    </section>
+    <section class="reading-panel" aria-labelledby="decisions-heading">
+      <h2 id="decisions-heading">Ваш фактичний маршрут</h2>
+      <ol class="decision-history">
+        @for (decision of report.decisions; track decision.decisionNumber) {
+          <li><h3>Рішення {{ decision.decisionNumber }}: {{ decision.label }}</h3><p>{{ decision.explanation }}</p></li>
+        }
+      </ol>
+      <h2>Негайні та реалізовані відкладені наслідки</h2>
+      <app-timeline [entries]="report.appliedEffects" />
+      <h2>Нереалізовані події</h2>
+      <p class="muted">Ці події не додаються до фінальних показників і не вважаються такими, що сталися.</p>
+      @if (report.unrealizedEffects.length) {
+        <ul>@for (event of report.unrealizedEffects; track event.id) { <li><strong>Не настало:</strong> {{ event.consequenceText }}</li> }</ul>
+      } @else { <p>На цьому маршруті немає запланованих подій, що залишилися нереалізованими.</p> }
+      <h2>Право, професійні стандарти та етичні компроміси</h2>
+      <p>Нормативні вимоги потребують перевірки конкретного джерела, редакції та застосовності. Авторські наслідки й конфлікти цінностей не підтверджують правову допустимість рішення та не замінюють фахової консультації.</p>
+      <h2>Запитання для рефлексії</h2>
+      <ol class="reflection-questions">@for (question of report.reflectionQuestions; track $index) { <li>{{ question }}</li> }</ol>
+      <aside class="learning-note"><h2>Межі інтерпретації</h2><p>{{ report.limitations }}</p></aside>
+    </section>
+    <app-sources [sources]="sources()" />
+    <div class="actions">
+      <button type="button" class="button" data-action="restart" (click)="restart()">Спробувати інший маршрут</button>
+      <a [routerLink]="navigation.back" class="button button-secondary">{{ navigation.backLabel }}</a>
+    </div>
+  } @else {
+    <section class="state-panel" role="status">
+      <h2>Немає завершеного проходження</h2>
+      <p>Підсумок з’явиться після завершення історії. Прогрес зберігається лише в пам’яті вкладки й скидається після перезавантаження.</p>
+      <a class="button" [routerLink]="[navigation.base, scenario.id, 'play']">Відкрити проходження</a>
+    </section>
+  }
+}
