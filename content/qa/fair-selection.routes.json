@@ -1,0 +1,560 @@
+{
+  "scenarioId": "fair-selection",
+  "version": "1.0.0",
+  "contentCreatedAt": "2026-11-20",
+  "analysis": "Content oracle computed from route membership and authored deltas; compared with real public engine, not an application runtime.",
+  "nodeCount": 12,
+  "choiceCount": 14,
+  "endingCount": 4,
+  "routeCount": 8,
+  "minDecisions": 3,
+  "maxDecisions": 3,
+  "routes": [
+    {
+      "route": 1,
+      "nodes": [
+        "selection-intro",
+        "selection-first",
+        "selection-second-a",
+        "selection-third-aa",
+        "selection-ending-1"
+      ],
+      "choices": [
+        {
+          "nodeId": "selection-first",
+          "choiceId": "selection-choice-1-1"
+        },
+        {
+          "nodeId": "selection-second-a",
+          "choiceId": "selection-choice-2-1"
+        },
+        {
+          "nodeId": "selection-third-aa",
+          "choiceId": "selection-choice-4-1"
+        }
+      ],
+      "ending": "selection-ending-1",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 6,
+        "fairness": 3,
+        "trust": 0,
+        "effectiveness": -3
+      },
+      "applied": [
+        "selection-delayed-1",
+        "selection-delayed-2",
+        "selection-delayed-4"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "selection-delayed-1",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "selection-delayed-2",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "selection-third-aa"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "selection-delayed-4",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "selection-third-aa"
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "corruption-28",
+        "corruption-3",
+        "internal-16",
+        "selection-editorial"
+      ]
+    },
+    {
+      "route": 2,
+      "nodes": [
+        "selection-intro",
+        "selection-first",
+        "selection-second-a",
+        "selection-third-aa",
+        "selection-ending-2"
+      ],
+      "choices": [
+        {
+          "nodeId": "selection-first",
+          "choiceId": "selection-choice-1-1"
+        },
+        {
+          "nodeId": "selection-second-a",
+          "choiceId": "selection-choice-2-1"
+        },
+        {
+          "nodeId": "selection-third-aa",
+          "choiceId": "selection-choice-4-2"
+        }
+      ],
+      "ending": "selection-ending-2",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 5,
+        "fairness": 3,
+        "trust": -2,
+        "effectiveness": -1
+      },
+      "applied": [
+        "selection-delayed-1",
+        "selection-delayed-2",
+        "selection-delayed-4"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "selection-delayed-1",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "selection-delayed-2",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "selection-third-aa"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "selection-delayed-4",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "selection-third-aa"
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "corruption-28",
+        "corruption-3",
+        "internal-16",
+        "selection-editorial"
+      ]
+    },
+    {
+      "route": 3,
+      "nodes": [
+        "selection-intro",
+        "selection-first",
+        "selection-second-a",
+        "selection-third-ab",
+        "selection-ending-1"
+      ],
+      "choices": [
+        {
+          "nodeId": "selection-first",
+          "choiceId": "selection-choice-1-1"
+        },
+        {
+          "nodeId": "selection-second-a",
+          "choiceId": "selection-choice-2-2"
+        },
+        {
+          "nodeId": "selection-third-ab",
+          "choiceId": "selection-choice-5-1"
+        }
+      ],
+      "ending": "selection-ending-1",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 6,
+        "fairness": 4,
+        "trust": 0,
+        "effectiveness": -1
+      },
+      "applied": [
+        "selection-delayed-1",
+        "selection-delayed-5"
+      ],
+      "unrealized": [
+        "selection-delayed-2"
+      ],
+      "delayed": [
+        {
+          "id": "selection-delayed-1",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "selection-delayed-2",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "selection-third-aa"
+          },
+          "expected": "unrealized"
+        },
+        {
+          "id": "selection-delayed-5",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "corruption-28",
+        "corruption-3",
+        "internal-16",
+        "selection-editorial"
+      ]
+    },
+    {
+      "route": 4,
+      "nodes": [
+        "selection-intro",
+        "selection-first",
+        "selection-second-a",
+        "selection-third-ab",
+        "selection-ending-3"
+      ],
+      "choices": [
+        {
+          "nodeId": "selection-first",
+          "choiceId": "selection-choice-1-1"
+        },
+        {
+          "nodeId": "selection-second-a",
+          "choiceId": "selection-choice-2-2"
+        },
+        {
+          "nodeId": "selection-third-ab",
+          "choiceId": "selection-choice-5-2"
+        }
+      ],
+      "ending": "selection-ending-3",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 6,
+        "fairness": 2,
+        "trust": 1,
+        "effectiveness": 2
+      },
+      "applied": [
+        "selection-delayed-1",
+        "selection-delayed-5"
+      ],
+      "unrealized": [
+        "selection-delayed-2"
+      ],
+      "delayed": [
+        {
+          "id": "selection-delayed-1",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "selection-delayed-2",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "selection-third-aa"
+          },
+          "expected": "unrealized"
+        },
+        {
+          "id": "selection-delayed-5",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "corruption-28",
+        "corruption-3",
+        "internal-16",
+        "selection-editorial"
+      ]
+    },
+    {
+      "route": 5,
+      "nodes": [
+        "selection-intro",
+        "selection-first",
+        "selection-second-b",
+        "selection-third-ba",
+        "selection-ending-2"
+      ],
+      "choices": [
+        {
+          "nodeId": "selection-first",
+          "choiceId": "selection-choice-1-2"
+        },
+        {
+          "nodeId": "selection-second-b",
+          "choiceId": "selection-choice-3-1"
+        },
+        {
+          "nodeId": "selection-third-ba",
+          "choiceId": "selection-choice-6-1"
+        }
+      ],
+      "ending": "selection-ending-2",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 4,
+        "fairness": 6,
+        "trust": 1,
+        "effectiveness": -4
+      },
+      "applied": [
+        "selection-delayed-3",
+        "selection-delayed-6"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "selection-delayed-3",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "selection-second-b"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "selection-delayed-6",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "selection-third-ba"
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "corruption-28",
+        "corruption-3",
+        "internal-16",
+        "selection-editorial"
+      ]
+    },
+    {
+      "route": 6,
+      "nodes": [
+        "selection-intro",
+        "selection-first",
+        "selection-second-b",
+        "selection-third-ba",
+        "selection-ending-4"
+      ],
+      "choices": [
+        {
+          "nodeId": "selection-first",
+          "choiceId": "selection-choice-1-2"
+        },
+        {
+          "nodeId": "selection-second-b",
+          "choiceId": "selection-choice-3-1"
+        },
+        {
+          "nodeId": "selection-third-ba",
+          "choiceId": "selection-choice-6-2"
+        }
+      ],
+      "ending": "selection-ending-4",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 3,
+        "fairness": 7,
+        "trust": -1,
+        "effectiveness": -2
+      },
+      "applied": [
+        "selection-delayed-3",
+        "selection-delayed-6"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "selection-delayed-3",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "selection-second-b"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "selection-delayed-6",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "selection-third-ba"
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "corruption-28",
+        "corruption-3",
+        "internal-16",
+        "selection-editorial"
+      ]
+    },
+    {
+      "route": 7,
+      "nodes": [
+        "selection-intro",
+        "selection-first",
+        "selection-second-b",
+        "selection-third-bb",
+        "selection-ending-3"
+      ],
+      "choices": [
+        {
+          "nodeId": "selection-first",
+          "choiceId": "selection-choice-1-2"
+        },
+        {
+          "nodeId": "selection-second-b",
+          "choiceId": "selection-choice-3-2"
+        },
+        {
+          "nodeId": "selection-third-bb",
+          "choiceId": "selection-choice-7-1"
+        }
+      ],
+      "ending": "selection-ending-3",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 5,
+        "fairness": 5,
+        "trust": -1,
+        "effectiveness": -4
+      },
+      "applied": [
+        "selection-delayed-3",
+        "selection-delayed-7"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "selection-delayed-3",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "selection-second-b"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "selection-delayed-7",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "corruption-28",
+        "corruption-3",
+        "internal-16",
+        "selection-editorial"
+      ]
+    },
+    {
+      "route": 8,
+      "nodes": [
+        "selection-intro",
+        "selection-first",
+        "selection-second-b",
+        "selection-third-bb",
+        "selection-ending-4"
+      ],
+      "choices": [
+        {
+          "nodeId": "selection-first",
+          "choiceId": "selection-choice-1-2"
+        },
+        {
+          "nodeId": "selection-second-b",
+          "choiceId": "selection-choice-3-2"
+        },
+        {
+          "nodeId": "selection-third-bb",
+          "choiceId": "selection-choice-7-2"
+        }
+      ],
+      "ending": "selection-ending-4",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 4,
+        "fairness": 6,
+        "trust": 0,
+        "effectiveness": -7
+      },
+      "applied": [
+        "selection-delayed-3",
+        "selection-delayed-7"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "selection-delayed-3",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "selection-second-b"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "selection-delayed-7",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "corruption-28",
+        "corruption-3",
+        "internal-16",
+        "selection-editorial"
+      ]
+    }
+  ]
+}

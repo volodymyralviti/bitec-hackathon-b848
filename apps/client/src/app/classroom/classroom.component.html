@@ -1,0 +1,56 @@
+<header class="page-heading"><p class="eyebrow">Аудиторне заняття</p><h1>{{ host ? 'Спільний розбір дилеми' : 'Приєднатися до обговорення' }}</h1>
+  <p class="lead">Без імен, реєстрації та особистих звітів. Ведучий бачить лише агрегат після закриття раунду.</p>
+</header>
+<aside class="learning-note small">Не вводьте персональні чи службові відомості. Анонімність результатів у застосунку не гарантує мережевої анонімності: інфраструктура може бачити підключення. Один підтверджений голос остаточний у раунді. Після reload тимчасовий доступ втрачено; не приєднуйтесь повторно для додаткового голосу.</aside>
+@if (error()) { <p class="state-panel" role="alert">{{ error() }}</p> }
+@if (session.issue(); as issue) { <p class="state-panel" role="alert" data-classroom-error>{{ issue.message }} <span class="small">({{ issue.code }})</span></p> }
+@if (session.message()) { <p role="status" aria-live="polite">{{ session.message() }}</p> }
+@if (session.state(); as state) {
+  <section class="state-panel classroom-access">
+    <h2>PIN: <strong data-room-pin>{{ state.pin }}</strong></h2>
+    <p>Кімната діє до {{ state.expiresAt | date:'HH:mm' }}. Прогрес і доступ лише в пам’яті.</p>
+    @if (host) { <label class="editor-input">Посилання для учасників<input readonly [value]="joinUrl()" data-join-url /></label> }
+    @if (!session.connected() && state.phase !== 'ended') { <p role="status">Немає мережі. Керування й голосування призупинено.</p> }
+    @if (!state.hostConnected && state.phase !== 'ended') { <p role="status" data-host-disconnected>Ведучий відключився. Дочекайтеся повернення; голосування призупинено.</p> }
+  </section>
+  <app-classroom-view [state]="state" />
+  @if (host && state.phase !== 'ended') {
+    <section class="state-panel" aria-label="Керування ведучого">
+      @if (state.node.type === 'narrative') { <button type="button" class="button" data-classroom-action="advance" [disabled]="!session.connected() || session.busy()" (click)="session.command('advance')">Продовжити вступ</button> }
+      @if (state.node.type === 'decision' && (state.phase === 'created' || state.phase === 'advanced')) { <button type="button" class="button" data-classroom-action="open" [disabled]="!session.connected() || session.busy()" (click)="session.command('open')">Відкрити голосування</button> }
+      @if (state.phase === 'voting_open') { <p>Голосування відкрите. Проміжні результати та індивідуальні відповіді не відображаються.</p><button type="button" class="button" data-classroom-action="close" [disabled]="!session.connected() || session.busy()" (click)="session.command('close')">Закрити й показати агрегат</button> }
+      @if (state.phase === 'voting_closed') {
+        <label class="editor-input">Спільна гілка після обговорення<select [formControl]="branch" data-branch><option value="">Оберіть альтернативу</option>@for (choice of state.node.choices; track choice.id) { <option [value]="choice.id">{{ choice.label }}</option> }</select></label>
+        <button type="button" class="button" data-classroom-action="advance" [disabled]="!branch.value || !session.connected() || session.busy()" (click)="session.command('advance', branch.value)">Перейти за обраною гілкою</button>
+      }
+      <p><button type="button" class="text-button" data-classroom-action="end" [disabled]="!session.connected() || session.busy()" (click)="end()">Завершити заняття</button></p>
+    </section>
+  } @else if (!host && state.phase === 'voting_open') {
+    @if (session.votedRound() === state.round) { <p class="state-panel" data-vote-recorded role="status">Голос прийнято. Дочекайтеся закриття раунду; розподіл поки приховано.</p> }
+    @else {
+      <div class="choice-list" aria-label="Варіанти рішення">@for (choice of state.node.choices; track choice.id) {
+        <button type="button" class="choice" [attr.data-classroom-choice]="choice.id" [attr.aria-pressed]="session.selected() === choice.id" [disabled]="!session.connected() || !state.hostConnected || session.busy()" (click)="session.choose(choice.id)">{{ choice.label }}</button>
+      }</div>
+      @if (session.selected()) {
+        <p>Підтвердіть остаточний голос. Він не визначає спільну гілку автоматично.</p>
+        <button type="button" class="button" data-classroom-action="vote" [disabled]="!session.connected() || !state.hostConnected || session.busy()" (click)="session.confirm()">Підтвердити голос</button>
+      }
+    }
+  } @else if (!host && state.phase !== 'ended') { <p class="state-panel" role="status">Дочекайтеся відкриття наступного раунду або обговоріть результат із групою.</p> }
+  @if (state.phase === 'ended') { <p class="learning-note" data-room-ended>Заняття завершено. Тимчасові голоси й доступ очищено.</p> }
+  <button type="button" class="text-button" (click)="session.leave()">{{ host ? 'Закрити екран ведучого (кімната залишиться до TTL)' : 'Вийти з кімнати' }}</button>
+} @else if (host) {
+  <section class="state-panel"><h2>Нова кімната</h2>
+    @if (loading()) { <p role="status">Завантаження…</p> }
+    @if (!loading() && !scenarios().length) { <p>Немає доступних сценаріїв.</p><button type="button" class="button" (click)="loadCatalog()">Повторити</button> }
+    <label class="editor-input">Сценарій<select [formControl]="scenarioId" data-classroom-scenario>@for (scenario of scenarios(); track scenario.id) { <option [value]="scenario.id">{{ scenario.title }} · {{ scenario.contentReview.demoOnly ? 'demo-only' : 'публічна версія' }}</option> }</select></label>
+    <button type="button" class="button" data-classroom-action="create" [disabled]="loading() || !scenarioId.value" (click)="create()">Створити кімнату</button>
+    <p>Ключ ведучого отримує лише ця вкладка. PIN і посилання для учасників не дають права керування. Після reload керування втрачається.</p>
+  </section>
+} @else {
+  <section class="state-panel"><h2>Увійти за PIN</h2>
+    <label class="editor-input">PIN кімнати<input type="text" inputmode="numeric" autocomplete="off" maxlength="6" [formControl]="pin" data-classroom-pin /></label>
+    <button type="button" class="button" data-classroom-action="join" [disabled]="session.busy()" (click)="join()">Приєднатися без імені</button>
+  </section>
+}
+<p><a routerLink="/scenarios">До сценаріїв</a> · <a [routerLink]="host ? '/classroom/join' : '/classroom/host'">{{ host ? 'Екран учасника' : 'Екран ведучого' }}</a></p>

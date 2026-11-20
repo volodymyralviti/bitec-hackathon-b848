@@ -1,10 +1,29 @@
 # Навчальні сценарії — Stage 04 / EDS-011–014
 
+## Stage 10D — актуальний публічний демокаталог
+
+У стандартному каталозі та Classroom picker рівно три оригінальні, вигадані й
+знеособлені кейси: **«Підпис під сумнівом»** (report-under-pressure),
+**«Хто заслуговує на місце?»** (fair-selection), **«Тиша після шикування»**
+(quiet-after-formation), у такому порядку. Кожний маршрут має рівно три рішення.
+Без ключа можна пройти кейс або імпортувати його JSON у /studio/demo.
+
+Демо · Потребує експертної перевірки. Нормативні редакції NOT VERIFIED,
+expert review PENDING. Оригінали draft/demoOnly/aiAssisted, sources unverified,
+choices uncertain. Це не юридично підтверджена навчальна публікація.
+
+Два CIDS-адаптовані кейси збережено як архівні приклади й регресійний контент,
+вони не входять до основного каталогу. CIDS лишається методичним орієнтиром;
+нові три ситуації не є адаптаціями CIDS чи описами реальних подій.
+
+
 Два авторські українськомовні сценарії за мотивами CIDS. Обидва мають
 `schemaVersion: "1"`, `version: "1.0.0"`, `publicationStatus: "draft"`,
 `contentReview: {status: "draft", demoOnly: true, aiAssisted: true}`.
 Це матеріал для content review, а не експертно схвалена публікація чи юридична порада.
-Автоматичне завантаження в публічний каталог не налаштовувалось.
+API на кожному старті читає явний `index.json` у відокремлений demo-only каталог;
+публічна копія має `publicationStatus=demo`, а ці оригінали залишаються draft.
+Це технічний показ демо, без зміни людського review чи перевірки джерел.
 
 | Файл | Сюжет | Вузли | Decision nodes | Choices | Endings | Повні маршрути | Рішень на маршрут |
 |---|---|---:|---:|---:|---:|---:|---:|
@@ -22,6 +41,62 @@
 Це статичні докази, не збережені результати учасників і не виконання engine.
 Нотатки для викладача: [постачання](teaching-notes/urgent-supply.md),
 [професійна порада](teaching-notes/truth-under-pressure.md).
+
+## Stage 10C — три оригінальні військово-освітні чернетки
+
+| Файл | Конфлікт | Структура | Доступ |
+|---|---|---|---|
+| [Підпис під сумнівом](scenarios/report-under-pressure.json) | Достовірність навчального обліку, лояльність, межі підпису | 12 вузлів, 14 choices, 4 endings, 8 маршрутів по 3 рішення | Кураторське демо з попередженням; не expert publication |
+| [Хто заслуговує на місце?](scenarios/fair-selection.json) | Родинний інтерес офіцера-посадовця, правила відбору, рівний доступ | Так само | Кураторське демо з попередженням; не expert publication |
+| [Тиша після шикування](scenarios/quiet-after-formation.json) | Гідність, підтримка, конфіденційність, перевірка неповних спостережень | Так само | Кураторське демо з попередженням; не expert publication |
+
+Це оригінальні AI-assisted сюжети, не CIDS-адаптації. Усі лишаються draft,
+demoOnly=true, aiAssisted=true, sources unverified, choices uncertain.
+Офіційні тексти чотирьох актів прочитано з data.rada.gov.ua (HTTP 200), але
+дату юридичної редакції на 20.11.2026 не підтверджено. **OFFICIAL SOURCE CHECK:
+PARTIAL; EXPERT APPROVAL: PENDING; Кураторське демо дозволене Stage 10D із попередженням; не expert publication.**
+
+[Докази й точні норми](qa/legal-source-evidence.md),
+[HTTP metadata, витяги й SHA-256](qa/legal-source-observations.json),
+[матриця 24 маршрутів](qa/college-route-matrix.md). Teaching notes:
+[облік](teaching-notes/report-under-pressure.md),
+[відбір](teaching-notes/fair-selection.md),
+[підтримка](teaching-notes/quiet-after-formation.md).
+
+Імпортуйте окремий JSON у `/studio/demo` для локального preview/export або
+в захищений `/studio` для приватного авторського збереження. Не потрібно
+редагувати код або додавати файл до index.json. Сам факт розміщення в content/
+нічого не публікує. Публічний index Stage 10D містить тільки три нові кейси; CIDS збережені в архіві та QA.
+
+Після build:
+
+```sh
+node content/qa/validate.mjs
+node --test content/qa/content.test.mjs
+node content/qa/college-qa.mjs
+# Лише після свідомої зміни нових кейсів: оновити їхні QA matrices
+node content/qa/college-qa.mjs --write-maps
+# CHROME_BIN до наявного Chrome/Edge
+node content/qa/browser-college.mjs
+```
+
+Остання команда створює лише тимчасовий loopback QA seed manifest із трьома
+копіями для перевірки Solo/Studio/Classroom. Вона не змінює index.json,
+дозволені production assets, реальну БД або ключі користувача й не є дозволом
+на public release. Повний звіт — [Stage 10C](../docs/STAGE_10C_REPORT.md).
+
+## Stage 10B — content review
+
+Окремі реєстри кандидатів і питання до фахівців:
+[urgent-supply](teaching-notes/urgent-supply-content-review.md),
+[truth-under-pressure](teaching-notes/truth-under-pressure-content-review.md).
+Оригінальні сценарні JSON та їхні unverified/draft/demoOnly/aiAssisted не змінено.
+Першоджерела й застосовність не підтверджені; candidate URL не є правовою основою.
+
+Після `pnpm build`, `node --test content/qa/content.test.mjs` додатково виконує
+всі 16 маршрутів справжнім engine і порівнює стани, metrics, delayed events та
+debrief до/після додавання необов’язкових source metadata. Історичний Stage 04
+report залишається записом тодішніх статичних перевірок.
 
 ## Джерела та межі перевірки
 

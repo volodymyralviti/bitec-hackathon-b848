@@ -3,14 +3,27 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
+import { mkdtemp } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
+import { SCENARIO_CONFIG } from '../src/scenarios/scenario-config';
 
 describe('API (e2e)', () => {
   let app: INestApplication<App>;
 
   beforeAll(async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'eds-health-e2e-'));
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(SCENARIO_CONFIG)
+      .useValue({
+        dataFile: join(directory, 'scenarios.json'),
+        contentDirectory: resolve(__dirname, '../../../content/scenarios'),
+        authorKey: '',
+        reviewerKey: '',
+      })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');

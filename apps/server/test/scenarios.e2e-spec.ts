@@ -1,0 +1,493 @@
+import { Test } from '@nestjs/testing';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import { mkdtemp, readFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import request from 'supertest';
+import { ScenarioModule } from '../src/scenarios/scenario.module';
+import {
+  SCENARIO_CONFIG,
+  type ScenarioConfig,
+} from '../src/scenarios/scenario-config';
+import type { Scenario } from '@eds/scenario-schema';
+import type { ScenarioRecord } from '../src/scenarios/scenario-store';
+
+const author = 'test-only-author-capability-000000000';
+const reviewer = 'test-only-reviewer-capability-0000000';
+describe('Protected Scenario API', () => {
+  let app: NestExpressApplication;
+  let config: ScenarioConfig;
+  let fixture: Scenario;
+  const client = () => request(app.getHttpServer());
+  const auth = { Authorization: `Bearer ${author}` };
+  const reviewAuth = { Authorization: `Bearer ${reviewer}` };
+  const fresh = (id: string): Scenario => ({
+    ...structuredClone(fixture),
+    id,
+    version: '1.0.0',
+  });
+
+  beforeAll(async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'eds-api-test-'));
+    config = {
+      authorKey: author,
+      reviewerKey: reviewer,
+      dataFile: join(directory, 'scenarios.json'),
+      contentDirectory: resolve(__dirname, '../../../content/scenarios'),
+    };
+    fixture = JSON.parse(
+      await readFile(
+        resolve(
+          __dirname,
+          '../../../packages/scenario-schema/test/fixtures/minimal.json',
+        ),
+        'utf8',
+      ),
+    ) as Scenario;
+    fixture.publicationStatus = 'draft';
+    const module = await Test.createTestingModule({ imports: [ScenarioModule] })
+      .overrideProvider(SCENARIO_CONFIG)
+      .useValue(config)
+      .compile();
+    app = module.createNestApplication<NestExpressApplication>();
+    app.setGlobalPrefix('api');
+    app.useBodyParser('json', { limit: '1mb' });
+    await app.init();
+  });
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('preserves legal source metadata in private import/export without promoting review', async () => {
+    const scenario = fresh('legal-metadata-private');
+    Object.assign(scenario.sources[0], {
+      sourceType: 'normative',
+      documentType: 'judgment',
+      court: 'Тестовий суд',
+      caseNumber: 'TEST',
+      legalPosition: 'Синтетична позиція для тесту.',
+      documentNumber: 'TEST',
+      documentDate: '2025-01-01',
+      relevance: 'Тестове пояснення релевантності.',
+      applicabilityQuestions: 'Потребує перевірки фахівцем.',
+      expertReviewRequired: true,
+    });
+    await client()
+      .post('/api/author/scenarios/import')
+      .set(auth)
+      .send(scenario)
+      .expect(201);
+    const response = await client()
+      .get('/api/author/scenarios/legal-metadata-private/1.0.0/export')
+      .set(auth)
+      .expect(200);
+    expect(response.body).toEqual(scenario);
+    await client().get('/api/scenarios/legal-metadata-private').expect(404);
+    await client()
+      .get('/api/author/scenarios/legal-metadata-private/1.0.0/export')
+      .expect(401);
+  });
+
+  it('rejects client-forged expert review even with an author capability', async () => {
+    const scenario = fresh('forged-source-approval');
+    scenario.sources[0].verificationStatus = 'expert_checked';
+    scenario.sources[0].verifiedAt = '2026-01-01';
+    scenario.sources[0].revision = 'Синтетична редакція';
+    scenario.sources[0].verificationEvidence = 'Підроблена клієнтська позначка';
+    await client()
+      .post('/api/author/scenarios/import')
+      .set(auth)
+      .send(scenario)
+      .expect(422);
+    await client()
+      .post('/api/author/scenarios/import')
+      .send(scenario)
+      .expect(401);
+    scenario.sources[0].verificationStatus = 'unverified';
+    scenario.sources[0].verifiedAt = null;
+    scenario.contentReview = {
+      ...scenario.contentReview,
+      status: 'expert_approved',
+      reviewedAt: '2026-01-01T00:00:00Z',
+      reviewerRole: 'Підроблена роль',
+      evidenceRef: 'Підроблений запис',
+    };
+    await client()
+      .post('/api/author/scenarios/import')
+      .set(auth)
+      .send(scenario)
+      .expect(422);
+    await client()
+      .post('/api/reviewer/scenarios/forged-source-approval/1.0.0/review')
+      .set(auth)
+      .send({ humanAttestation: true })
+      .expect(401);
+  });
+
+  it('serves only explicit demo seeds and no private draft', async () => {
+    const response = await client().get('/api/scenarios').expect(200);
+    const list = response.body as Scenario[];
+    expect(list.map((item) => item.id)).toEqual([
+      'report-under-pressure',
+      'fair-selection',
+      'quiet-after-formation',
+    ]);
+    expect(
+      list.every(
+        (item) =>
+          item.publicationStatus === 'demo' &&
+          item.contentReview.demoOnly &&
+          item.contentReview.status === 'draft',
+      ),
+    ).toBe(true);
+    expect(response.body).not.toHaveProperty('nodes');
+    await client().get('/api/scenarios/report-under-pressure').expect(200);
+    const scenario = fresh('test-private');
+    await client()
+      .post('/api/author/scenarios')
+      .set(auth)
+      .send(scenario)
+      .expect(201);
+    await client().get('/api/scenarios/test-private').expect(404);
+    await client().get('/api/scenarios/test-private?version=1.0.0').expect(404);
+  });
+
+  it('rejects unauthenticated author/reviewer routes and cross-role credentials', async () => {
+    await client().get('/api/author/scenarios').expect(401);
+    await client()
+      .post('/api/author/scenarios/validate')
+      .send(fixture)
+      .expect(401);
+    await client()
+      .post('/api/author/scenarios/import')
+      .send(fixture)
+      .expect(401);
+    await client()
+      .post('/api/reviewer/scenarios/x/1.0.0/review')
+      .set(auth)
+      .send({})
+      .expect(401);
+    await client().post('/api/reviewer/scenarios/x/1.0.0/publish').expect(401);
+    await client().get('/api/author/scenarios').set(reviewAuth).expect(401);
+    const response = await client()
+      .get('/api/author/scenarios')
+      .set(auth)
+      .expect(200);
+    expect(response.headers['cache-control']).toBe('no-store');
+  });
+
+  it('release privacy gate protects every draft operation and exposes no participant profile endpoints', async () => {
+    const operations = [
+      () => client().get('/api/author/scenarios'),
+      () => client().get('/api/author/scenarios/x/1.0.0'),
+      () => client().get('/api/author/scenarios/x/1.0.0/export'),
+      () => client().post('/api/author/scenarios'),
+      () => client().post('/api/author/scenarios/import'),
+      () => client().post('/api/author/scenarios/validate'),
+      () => client().put('/api/author/scenarios/x/1.0.0'),
+      () => client().post('/api/author/scenarios/x/1.0.0/fork'),
+      () => client().post('/api/author/scenarios/x/1.0.0/demo'),
+      () => client().post('/api/reviewer/scenarios/x/1.0.0/review'),
+      () => client().post('/api/reviewer/scenarios/x/1.0.0/publish'),
+    ];
+    for (const operation of operations) {
+      const response = await operation().expect(401);
+      expect(response.headers['cache-control']).toBe('no-store');
+    }
+    for (const path of [
+      '/api/participants',
+      '/api/profiles',
+      '/api/analytics',
+      '/api/leaderboard',
+      '/api/classrooms/x/votes',
+      '/api/classrooms/x/report',
+    ])
+      await client().get(path).expect(404);
+  });
+
+  it('import/export roundtrips and validator reports path/code/message for a broken graph', async () => {
+    const scenario = fresh('test-roundtrip');
+    const saved = await client()
+      .post('/api/author/scenarios/import')
+      .set(auth)
+      .send(scenario)
+      .expect(201);
+    const exported = await client()
+      .get('/api/author/scenarios/test-roundtrip/1.0.0/export')
+      .set(auth)
+      .expect(200);
+    expect(exported.body).toEqual(scenario);
+    expect((saved.body as ScenarioRecord).revision).toBe(1);
+    const broken = fresh('test-broken');
+    broken.startNodeId = 'missing';
+    const result = await client()
+      .post('/api/author/scenarios/validate')
+      .set(auth)
+      .send(broken)
+      .expect(201);
+    expect(result.body as unknown).toMatchObject({
+      success: false,
+      errors: expect.arrayContaining([
+        expect.objectContaining({
+          code: 'ENTRY_NOT_FOUND',
+          path: ['startNodeId'],
+          message: expect.any(String) as unknown,
+        }),
+      ]) as unknown,
+    });
+    await client()
+      .post('/api/author/scenarios')
+      .set(auth)
+      .send(broken)
+      .expect(422);
+  });
+
+  it('rejects forged approvals and incomplete human review', async () => {
+    const scenario = fresh('test-review-gate');
+    scenario.contentReview.status = 'in_review';
+    await client()
+      .post('/api/author/scenarios')
+      .set(auth)
+      .send(scenario)
+      .expect(201);
+    await client()
+      .post('/api/reviewer/scenarios/test-review-gate/1.0.0/review')
+      .set(reviewAuth)
+      .send({ expectedRevision: 1 })
+      .expect(403);
+    await client()
+      .post('/api/reviewer/scenarios/test-review-gate/1.0.0/review')
+      .set(reviewAuth)
+      .send({
+        expectedRevision: 1,
+        humanAttestation: true,
+        decision: 'expert_approved',
+      })
+      .expect(422);
+    await client()
+      .post('/api/reviewer/scenarios/test-review-gate/1.0.0/publish')
+      .set(reviewAuth)
+      .send({ expectedRevision: 1, confirmPublication: true })
+      .expect(409);
+    const forged = fresh('test-forged');
+    forged.contentReview = {
+      status: 'expert_approved',
+      demoOnly: true,
+      aiAssisted: true,
+      reviewedAt: '2026-11-20T00:00:00Z',
+      reviewerRole: 'TEST ONLY forged role',
+      evidenceRef: 'TEST ONLY rejected claim',
+    };
+    await client()
+      .post('/api/author/scenarios')
+      .set(auth)
+      .send(forged)
+      .expect(422);
+    await client().get('/api/scenarios/test-forged').expect(404);
+  });
+
+  it('makes demo publication explicit and immutable and rejects concurrent stale writes', async () => {
+    const scenario = fresh('test-demo');
+    await client()
+      .post('/api/author/scenarios')
+      .set(auth)
+      .send(scenario)
+      .expect(201);
+    const updates = await Promise.all(
+      [1, 2].map((number) =>
+        client()
+          .put('/api/author/scenarios/test-demo/1.0.0')
+          .set(auth)
+          .send({
+            expectedRevision: 1,
+            scenario: { ...scenario, title: `Revision ${number}` },
+          }),
+      ),
+    );
+    expect(updates.map((response) => response.status).sort()).toEqual([
+      200, 409,
+    ]);
+    await client()
+      .post('/api/author/scenarios/test-demo/1.0.0/demo')
+      .set(auth)
+      .send({ expectedRevision: 2 })
+      .expect(400);
+    await client()
+      .post('/api/author/scenarios/test-demo/1.0.0/demo')
+      .set(auth)
+      .send({ expectedRevision: 2, confirmDemoOnly: true })
+      .expect((response) => {
+        if (response.status !== 201)
+          throw new Error(JSON.stringify(response.body));
+      })
+      .expect(201);
+    const published = await client()
+      .get('/api/scenarios/test-demo')
+      .expect(200);
+    expect((published.body as Scenario).publicationStatus).toBe('demo');
+    await client()
+      .put('/api/author/scenarios/test-demo/1.0.0')
+      .set(auth)
+      .send({ expectedRevision: 3, scenario })
+      .expect(409);
+    await client()
+      .post('/api/author/scenarios/test-demo/1.0.0/fork')
+      .set(auth)
+      .send({ expectedRevision: 3, version: '1.0.1' })
+      .expect(201);
+    await client().get('/api/scenarios/test-demo?version=1.0.1').expect(404);
+    expect((await client().get('/api/scenarios/test-demo')).body).toEqual(
+      published.body,
+    );
+  });
+
+  it('a test-only human-reviewer stub can release a synthetic case; the published snapshot never mutates', async () => {
+    // Stub ONLY a reviewer acting on a synthetic test fixture. No CIDS/legal source is approved.
+    const scenario = fresh('test-only-human-review-stub');
+    scenario.contentReview.status = 'in_review';
+    // Only the protected reviewer can assess a definite legalStatus in Stage 10B.
+    // These particulars are synthetic test data, not a Ukrainian legal citation.
+    scenario.contentCreatedAt = '2026-11-20';
+    scenario.sources[0] = {
+      ...scenario.sources[0],
+      sourceType: 'normative',
+      verificationStatus: 'team_checked',
+      verifiedAt: '2026-11-20',
+      versionAsOf: '2026-11-20',
+      revision: 'TEST ONLY synthetic rule',
+      issuer: 'TEST ONLY synthetic issuing body',
+      pinpoint: 'TEST ONLY section 1',
+      documentType: 'other',
+      documentDate: '2026-11-20',
+      url: 'https://example.org/test-only',
+      relevance: 'TEST ONLY synthetic applicability',
+      verificationEvidence: 'test-only://synthetic-source-record',
+    };
+    const decision = scenario.nodes.find((node) => node.type === 'decision')!;
+    if (decision.type === 'decision') {
+      decision.choices[0].legalStatus = 'uncertain';
+      decision.choices[0].sourceIds = [scenario.sources[0].sourceId];
+    }
+    await client()
+      .post('/api/author/scenarios')
+      .set(auth)
+      .send(scenario)
+      .expect(201);
+    const testOnlyHumanReviewerStub = {
+      expectedRevision: 1,
+      humanAttestation: true,
+      decision: 'expert_approved',
+      demoOnly: false,
+      aiAssisted: scenario.contentReview.aiAssisted,
+      reviewedAt: '2026-11-20T00:00:00Z',
+      reviewerRole: 'TEST ONLY reviewer stub',
+      evidenceRef: 'test-only://synthetic-review-stub',
+      legalAssessments:
+        decision.type === 'decision'
+          ? [
+              {
+                nodeId: decision.id,
+                choiceId: decision.choices[0].id,
+                legalStatus: 'allowed',
+              },
+            ]
+          : [],
+      sources: scenario.sources.map((source) => ({
+        ...source,
+        verificationStatus: 'expert_checked',
+        verifiedAt: '2026-11-20',
+        revision: 'TEST ONLY fixture revision',
+      })),
+    };
+    for (const legalAssessments of [
+      [{ nodeId: 'missing', choiceId: 'missing', legalStatus: 'allowed' }],
+      [
+        ...testOnlyHumanReviewerStub.legalAssessments,
+        ...testOnlyHumanReviewerStub.legalAssessments,
+      ],
+      [{ nodeId: decision.id, choiceId: 'missing', legalStatus: 'permitted' }],
+    ]) {
+      await client()
+        .post(
+          '/api/reviewer/scenarios/test-only-human-review-stub/1.0.0/review',
+        )
+        .set(reviewAuth)
+        .send({ ...testOnlyHumanReviewerStub, legalAssessments })
+        .expect(422);
+    }
+    await client()
+      .post('/api/reviewer/scenarios/test-only-human-review-stub/1.0.0/review')
+      .set(reviewAuth)
+      .send(testOnlyHumanReviewerStub)
+      .expect((response) => {
+        if (response.status !== 201)
+          throw new Error(JSON.stringify(response.body));
+      })
+      .expect(201);
+    await client()
+      .post('/api/reviewer/scenarios/test-only-human-review-stub/1.0.0/publish')
+      .set(reviewAuth)
+      .send({ expectedRevision: 2, confirmPublication: true })
+      .expect(201);
+    const before = await client()
+      .get('/api/scenarios/test-only-human-review-stub?version=1.0.0')
+      .expect(200);
+    expect((before.body as Scenario).publicationStatus).toBe('published');
+    const reviewedDecision = (before.body as Scenario).nodes.find(
+      (node) => node.type === 'decision',
+    );
+    expect(
+      reviewedDecision?.type === 'decision' &&
+        reviewedDecision.choices[0].legalStatus,
+    ).toBe('allowed');
+    await client()
+      .put('/api/author/scenarios/test-only-human-review-stub/1.0.0')
+      .set(auth)
+      .send({ expectedRevision: 3, scenario })
+      .expect(409);
+    const forked = await client()
+      .post('/api/author/scenarios/test-only-human-review-stub/1.0.0/fork')
+      .set(auth)
+      .send({ expectedRevision: 3, version: '1.0.1' })
+      .expect(201);
+    expect((forked.body as ScenarioRecord).scenario.contentReview.status).toBe(
+      'draft',
+    );
+    const nextDecision = (forked.body as ScenarioRecord).scenario.nodes.find(
+      (node) => node.type === 'decision',
+    );
+    expect(
+      nextDecision?.type === 'decision' && nextDecision.choices[0].legalStatus,
+    ).toBe('uncertain');
+    expect(
+      (
+        await client().get(
+          '/api/scenarios/test-only-human-review-stub?version=1.0.0',
+        )
+      ).body,
+    ).toEqual(before.body);
+  });
+
+  it('persists across service restarts and fails authoring closed when no keys are configured', async () => {
+    const module = await Test.createTestingModule({ imports: [ScenarioModule] })
+      .overrideProvider(SCENARIO_CONFIG)
+      .useValue({ ...config, authorKey: '', reviewerKey: '' })
+      .compile();
+    const reopened = module.createNestApplication<NestExpressApplication>();
+    reopened.setGlobalPrefix('api');
+    await reopened.init();
+    try {
+      await request(reopened.getHttpServer())
+        .get('/api/scenarios/test-demo')
+        .expect(200);
+      await request(reopened.getHttpServer())
+        .get('/api/author/scenarios')
+        .expect(503);
+      await request(reopened.getHttpServer())
+        .post('/api/reviewer/scenarios/test-demo/1.0.0/review')
+        .expect(503);
+    } finally {
+      await reopened.close();
+    }
+  });
+});

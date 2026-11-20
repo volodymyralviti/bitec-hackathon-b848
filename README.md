@@ -1,7 +1,43 @@
 # Ethical Dilemmas Simulator
 
-Освітній симулятор етичних дилем українською мовою. Наразі репозиторій містить
-стартові Angular та NestJS застосунки; сценарії й навчальні режими ще не реалізовані.
+## Stage 10D — актуальний публічний демокаталог
+
+У стандартному каталозі та Classroom picker рівно три оригінальні, вигадані й
+знеособлені кейси: **«Підпис під сумнівом»** (report-under-pressure),
+**«Хто заслуговує на місце?»** (fair-selection), **«Тиша після шикування»**
+(quiet-after-formation), у такому порядку. Кожний маршрут має рівно три рішення.
+Без ключа можна пройти кейс або імпортувати його JSON у /studio/demo.
+
+Демо · Потребує експертної перевірки. Нормативні редакції NOT VERIFIED,
+expert review PENDING. Оригінали draft/demoOnly/aiAssisted, sources unverified,
+choices uncertain. Це не юридично підтверджена навчальна публікація.
+
+Два CIDS-адаптовані кейси збережено як архівні приклади й регресійний контент,
+вони не входять до основного каталогу. CIDS лишається методичним орієнтиром;
+нові три ситуації не є адаптаціями CIDS чи описами реальних подій.
+
+
+Освітній симулятор етичних дилем українською мовою. Є Angular/NestJS, Scenario DSL
+та три основні demo-only військово-освітні JSON і два архівні CIDS-приклади. Stage 05 додає повний Angular solo-прохід:
+каталог → narrative/рішення → наслідки → ending → debrief, через готовий `@eds/scenario-engine`.
+Деталі фактичного стану й smoke: [README клієнта](apps/client/README.md).
+
+Stage 06 додає NestJS Scenario API та захищений form-based Studio (`/studio`):
+приватні чернетки, validation/import/export, ізольований participant preview,
+явний demo-only показ і незмінні публічні версії. Каталог тепер використовує API;
+для роботи запускайте також `pnpm dev:api`. Серверні capabilities вводяться
+автором під час роботи й не вбудовуються у frontend. Фактичний reviewer gate
+вимкнений до появи реального рецензента. PostgreSQL не налаштований: є файлове
+сховище для одного процесу, без даних учасників. Налаштування, API та обмеження:
+[server README](apps/server/README.md).
+
+Stage 07 додає аудиторне заняття: `/classroom/host` для ведучого та
+`/classroom/join` або `/classroom/join/:pin` для учасників. Socket.IO синхронізує
+одну спільну engine-гілку; індивідуальних звітів і live-підрахунку немає.
+Після закриття точний агрегат доступний лише за ≥3 поданих голосів.
+Кімнати, токени та поточні голоси живуть лише в пам’яті й очищаються за TTL.
+Протокол, запуск, reconnect і межі анонімності:
+[Classroom README](apps/server/src/classroom/README.md).
 
 ## Структура
 
@@ -9,7 +45,8 @@
 apps/client/       Angular 21, standalone компоненти, Jasmine/Karma
 apps/server/       NestJS 11 + Express, CommonJS, Jest/Supertest
 packages/scenario-schema/ незалежний DSL v1, Zod, graph/provenance validation
-content/scenarios/ місце для сценаріїв (поки порожнє)
+packages/scenario-engine/ детермінований runtime без framework/network залежностей
+content/scenarios/ три демосценарії, два архівні CIDS та явний JSON-індекс
 ```
 
 Порожні каталоги не відтворюються Git до додавання файлів.
@@ -26,6 +63,7 @@ content/scenarios/ місце для сценаріїв (поки порожнє
 
 ```sh
 pnpm install --frozen-lockfile
+pnpm build
 ```
 
 Використовуйте єдиний `pnpm-lock.yaml`; не створюйте npm lock-файли в застосунках.
@@ -57,17 +95,21 @@ curl http://localhost:3000/api/health
 curl http://localhost:4200/api/health
 ```
 
-Клієнт перевіряє API при відкритті та кнопкою «Перевірити знову».
-Показує завантаження, успіх або зрозумілу помилку. Щоб перевірити недоступність,
-зупиніть API та натисніть кнопку або перезавантажте сторінку.
-Постійного фонового опитування немає.
+Стартовий екран — `/scenarios`. Каталог і preview використовують API; NestJS має
+працювати. За його недоступності UI показує error/retry без прихованої підміни
+статичним контентом. `/api/health` не виконує фонового polling і не розкриває секретів.
 
 API вже читає `PORT` із середовища (типово 3000); `.env` автоматично не завантажується.
 Наприклад, у PowerShell: `$env:PORT='3001'; pnpm.cmd dev:api`.
 Якщо порт змінено, відповідно змініть target у `apps/client/proxy.conf.json`
-і перезапустіть Angular dev server. Додаткові environment variables чи секрети не потрібні.
+і перезапустіть Angular dev server. Solo/classroom не потребують секретів у конфігурації.
+Studio за замовчуванням вимкнений (503). Для локального авторингу перед запуском API
+задайте випадковий server-only `AUTHOR_KEY` довжиною ≥32 символи й введіть його
+в password-поле `/studio`. Не записуйте ключ у Git, Angular config або shell transcript.
+`REVIEWER_KEY` залишайте порожнім до фактичного людського review.
+Змінні описано в [server/.env.example](apps/server/.env.example); файл не завантажується автоматично.
 
-Frontend завжди запитує відносний `/api/health`. Proxy зареєстрований лише для
+HealthService використовує відносний `/api/health`. Proxy зареєстрований лише для
 dev server та не входить до production bundle. У production вебсервер має
 передавати `/api/*` до NestJS на тому самому origin; dev proxy там не потрібен.
 Широкий CORS не вмикається.
@@ -79,10 +121,14 @@ pnpm build        # production build обох застосунків
 pnpm typecheck    # Angular templates, client specs, server TypeScript
 pnpm test         # schema tests, Angular unit, Nest unit, потім Nest e2e
 pnpm test:e2e     # лише Nest e2e
-pnpm lint         # scenario-schema і server ESLint, без --fix
+pnpm lint         # schema, engine і server ESLint, без --fix
+node content/qa/validate.mjs
+node --test content/qa/content.test.mjs
+node apps/client/scripts/check-solo-routes.mjs
+node scripts/check-release-safety.mjs
 ```
 
-Lint перевіряє scenario-schema та server без автоматичного виправлення.
+Lint перевіряє scenario-schema, scenario-engine та server без автоматичного виправлення.
 Angular ESLint поки не налаштовано. Для інтерактивних тестів:
 
 ```sh
@@ -119,4 +165,96 @@ pnpm --filter @eds/scenario-schema test
 `pnpm build` збирає shared package до застосунків та запускає окремий Angular
 esbuild import smoke. `pnpm typecheck` спершу будує shared declarations.
 `pnpm test` включає тести пакета та імпорту в обох застосунках; `pnpm lint`
-перевіряє новий пакет і сервер. Жодної runtime-функції симулятора не додано.
+перевіряє schema, engine і сервер. Подальші етапи додають solo, Studio та classroom.
+
+## Архітектура та відтворювані URL
+
+```mermaid
+flowchart LR
+  Browser[Angular: каталог / solo / Studio / classroom]
+  API[NestJS: Scenario API + protected author/reviewer]
+  Rooms[Socket.IO: volatile classroom sessions]
+  Store[(JSON scenario store: один процес)]
+  Schema[scenario-schema: DSL + graph + provenance]
+  Engine[scenario-engine: pure deterministic TypeScript]
+  Browser -->|HTTP same origin| API
+  Browser <-->|WebSocket| Rooms
+  API --> Store
+  API --> Schema
+  Rooms --> Engine
+  Browser -->|solo / private preview| Engine
+  Engine --> Schema
+```
+
+| Local URL | Призначення |
+|---|---|
+| `http://localhost:4200/scenarios` | Каталог двох кейсів |
+| `/scenarios/urgent-supply/play` | Повний solo із трьома рішеннями |
+| `/scenarios/truth-under-pressure/play` | Другий кейс |
+| `/studio` | Захищений авторинг; ключ вводиться під час роботи |
+| `/classroom/host` | Створення кімнати, контроль раундів |
+| `/classroom/join` | PIN-only приєднання; URL з PIN генерує ведучий |
+
+На першому запуску API копіює лише файли з `content/scenarios/index.json` у
+`apps/server/.data/scenarios.json` як явно demo-only. Оригінальні JSON лишаються
+draft; це не review. Існуюче сховище не пересіюється й не перезаписується.
+За потреби задайте **новий** абсолютний `SCENARIO_DATA_FILE`, зберігши старий файл.
+PostgreSQL/ORM/Compose/міграцій немає; `DATABASE_URL` зупиняє старт, доки не реалізовано
+відповідний adapter. Не запускайте непідтримувану БД для демо. Потрібен один API-процес.
+
+## Детерміновані правила та навчальний зміст
+
+JSON задає розгалужений граф; shared validator перевіряє всі повні маршрути,
+мінімум три рішення й два choices, посилання, цикли та досяжність delayed triggers.
+Engine не має LLM, прихованої випадковості, `eval` або довільного коду з контенту.
+
+При підтвердженні вибору engine застосовує immediate deltas, збільшує лічильник
+рішень, планує events, застосовує належні `after_decisions`, а потім входить у
+цільовий вузол і застосовує `on_enter_node`. `count` не включає рішення, яке
+створило event. Кожна подія спрацьовує один раз. Narrative-перехід не є рішенням.
+Нереалізовані події на ending показуються окремо й не змінюють фінальні метрики.
+
+Чотири показники починаються з нуля; цілі deltas від −10 до 10 на effect додаються
+без загального морального балу чи оцінки людини. Це авторська модель наслідків,
+не психометричний інструмент і не юридичний висновок. Host вибирає спільну гілку
+для обговорення; більшість голосів не є автоматичним етичним схваленням.
+
+| Сценарій | Авторська основа | Повні маршрути / рішення / endings |
+|---|---|---|
+| Постачання під тиском | CIDS №16: закупівля обладнання; адаптація до резервного живлення навчання | 8 / 3 на кожному / 4 |
+| Професійна правда під тиском | CIDS №1: професійна порада та очікування керівництва | 8 / 3 на кожному / 4 |
+
+У кожному JSON — `draft`, `demoOnly=true`, `aiAssisted=true`; по три unverified
+джерела. Першоджерела та українська правова застосовність не підтверджені;
+CIDS є методичним орієнтиром, не підтвердженням чинного українського права.
+Карти й нотатки: [content README](content/README.md). Потрібне окреме людське review.
+
+## Release-перевірки та передача команді
+
+Після build із установленим Chrome/Edge:
+
+```powershell
+$env:CHROME_BIN='C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'
+node apps/client/scripts/smoke-solo.mjs
+node apps/client/scripts/smoke-studio.mjs
+node apps/client/scripts/smoke-classroom.mjs
+```
+
+На Linux задайте `CHROME_BIN` шляхом до встановленого `google-chrome`.
+Smoke піднімають власний API з тимчасовими synthetic даними й випадковими runtime
+ключами; робоче Studio-сховище не використовується. Classroom має чотири окремі
+browser contexts. Порт для тестового API/host вибирається автоматично.
+Конфігурація [CI](.github/workflows/release-checks.yml) повторює ці команди для
+Linux/Windows, без deploy або application secrets; її hosted запуск ще має
+відбутися після окремо погодженого push. Версії залежностей не оновлювались.
+
+- [Acceptance gates і докази](docs/MVP_ACCEPTANCE.md)
+- [Release findings та punch list](docs/RELEASE_READINESS.md)
+- [Privacy review та інфраструктурні обмеження](docs/SECURITY_PRIVACY.md)
+- [Як використано ШІ — коротка записка](docs/AI_USAGE_UA.md)
+- [Live/video demo outlines](docs/DEMO_OUTLINE_UA.md)
+- [Можлива інтеграція Moodle / Дія.Освіта](docs/LMS_INTEGRATION.md)
+
+Технічне локальне демо готове; експертний випуск і фінальна подача лишаються
+**PARTIAL** до рішень команди. Відео, фінальний PDF, правове review, права на
+матеріали та актуальні правила події не підтверджені цими автоматизованими тестами.
