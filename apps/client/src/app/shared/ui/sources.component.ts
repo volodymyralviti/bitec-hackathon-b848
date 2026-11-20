@@ -11,6 +11,7 @@ import type { SourceReference } from '@eds/scenario-schema';
       @for (source of sources(); track source.sourceId) {
         <details class="source-card reading-details" [attr.data-source-id]="source.sourceId">
           <summary>{{ source.title }} · {{ verificationLabel(source.verificationStatus) }}</summary>
+          <p class="small">Ідентифікатор джерела: {{ source.sourceId }}</p>
           <p><span class="badge">{{ typeLabel(source.sourceType) }}</span>
             <span class="badge" [class.badge-demo]="source.verificationStatus === 'unverified'">{{ verificationLabel(source.verificationStatus) }}</span></p>
           @if (source.sourceType === 'normative' && source.verificationStatus !== 'expert_checked') { <p class="learning-note">Правову застосовність цього джерела ще не підтверджено.</p> }

@@ -33,18 +33,22 @@ export function compareVersions(a: string, b: string): number {
 @Injectable()
 export class ScenarioStore implements OnModuleInit {
   private records: ScenarioRecord[] = [];
+  private curated: ScenarioRecord[] = [];
   private queue: Promise<void> = Promise.resolve();
   constructor(
     @Inject(SCENARIO_CONFIG) private readonly config: ScenarioConfig,
   ) {}
 
   async onModuleInit(): Promise<void> {
+    // Deployment-owned allowlist, refreshed even when an older author store exists.
+    // This read-only demo projection never updates stored drafts or review evidence.
+    this.curated = await this.seed();
     let text: string;
     try {
       text = await readFile(this.config.dataFile, 'utf8');
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-      this.records = await this.seed();
+      this.records = jsonCopy(this.curated);
       await this.persist(this.records);
       return;
     }
@@ -75,6 +79,10 @@ export class ScenarioStore implements OnModuleInit {
 
   list(): ScenarioRecord[] {
     return jsonCopy(this.records);
+  }
+
+  demoCatalog(): ScenarioRecord[] {
+    return jsonCopy(this.curated);
   }
 
   change<T>(operation: (records: ScenarioRecord[]) => T): Promise<T> {

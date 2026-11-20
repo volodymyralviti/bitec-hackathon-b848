@@ -75,20 +75,21 @@ try {
   await send('Runtime.enable'); await send('Log.enable'); await send('Page.enable'); await send('Page.bringToFront');
   await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 960, deviceScaleFactor: 1, mobile: false });
   await send('Page.navigate', { url: base + '/' });
-  await wait('document.querySelectorAll(".scenario-card").length === 2');
+  await wait('document.querySelectorAll(".scenario-card").length === 3');
   assert.equal(await evaluate('location.pathname'), '/scenarios');
   assert.equal(await evaluate('document.documentElement.lang'), 'uk');
   await screenshot('solo-catalog-desktop');
-  const cases = [
-    { id: 'urgent-supply', choices: ['common-brief', 'shared-questions', 'recommend-minimum'], metrics: [3, 2, 0, 1], ending: 'Часткове відновлення з видимими межами' },
-    { id: 'truth-under-pressure', choices: ['peer-window', 'interim-options', 'test-access'], metrics: [4, -1, 1, 0], ending: 'Обмежений крок із правом перегляду' }
-  ];
+  const cases = ['report-under-pressure', 'fair-selection', 'quiet-after-formation'].map(id => {
+    const scenario = JSON.parse(fs.readFileSync(new URL('../../../content/scenarios/' + id + '.json', import.meta.url), 'utf8'));
+    const route = JSON.parse(fs.readFileSync(new URL('../../../content/qa/' + id + '.routes.json', import.meta.url), 'utf8')).routes[0];
+    return { id, choices: route.choices.map(choice => choice.choiceId), metrics: Object.values(route.finalMetrics), ending: scenario.nodes.find(node => node.id === route.ending).title };
+  });
   const results = [];
   for (const [index, item] of cases.entries()) {
     if (index) {
       await send('Emulation.setDeviceMetricsOverride', { width: 360, height: 800, deviceScaleFactor: 1, mobile: true });
       await click('.back-link');
-      await wait('document.querySelectorAll(".scenario-card").length === 2');
+      await wait('document.querySelectorAll(".scenario-card").length === 3');
       await screenshot('solo-catalog-mobile');
     }
     await click(`.scenario-card a[href="/scenarios/${item.id}/play"]`);
@@ -114,7 +115,7 @@ try {
     await click(`a[href="/scenarios/${item.id}/debrief"]`);
     await wait('document.querySelectorAll(".decision-history li").length === 3');
     assert.equal(await evaluate('document.body.innerText.includes("Відкладений наслідок настав")'), true);
-    assert.equal(await evaluate('document.querySelectorAll(".source-card").length'), 3);
+    assert.ok(await evaluate('document.querySelectorAll(".source-card").length >= 2'));
     const actualMetrics = await evaluate('[...document.querySelectorAll(".dimensions strong")].map(node => Number(node.textContent))');
     assert.deepEqual(actualMetrics, item.metrics);
     assert.equal(await evaluate('document.documentElement.scrollWidth <= innerWidth'), true);
@@ -125,14 +126,14 @@ try {
     results.push({ ...item, decisionCount: 3, restart: true });
   }
   // True page reloads destroy in-memory state, including on a deep debrief URL.
-  await send('Page.navigate', { url: base + '/scenarios/urgent-supply/debrief' });
+  await send('Page.navigate', { url: base + '/scenarios/report-under-pressure/debrief' });
   await wait('document.body.innerText.includes("Немає завершеного проходження")');
   await send('Page.navigate', { url: base + '/scenarios/missing/play' });
   await wait('document.body.innerText.includes("Сценарій не знайдено")');
   await send('Page.navigate', { url: base + '/play' });
   await wait('document.body.innerText.includes("Оберіть навчальну ситуацію")');
   await send('Page.navigate', { url: base + '/' });
-  await wait('document.querySelectorAll(".scenario-card").length === 2');
+  await wait('document.querySelectorAll(".scenario-card").length === 3');
   await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
   await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
   assert.equal(await evaluate('document.activeElement.classList.contains("skip-link")'), true);

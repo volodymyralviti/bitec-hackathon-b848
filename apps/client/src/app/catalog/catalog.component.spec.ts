@@ -5,6 +5,9 @@ import type { Scenario } from '@eds/scenario-schema';
 import { CatalogComponent } from './catalog.component';
 import { ScenarioRepository } from '../core/scenarios/scenario-repository';
 import { scenarioFixture } from '../testing/scenarios.fixture';
+import report from '../../../../../content/scenarios/report-under-pressure.json';
+import selection from '../../../../../content/scenarios/fair-selection.json';
+import quiet from '../../../../../content/scenarios/quiet-after-formation.json';
 
 describe('CatalogComponent', () => {
   let fixture: ComponentFixture<CatalogComponent>;
@@ -25,16 +28,16 @@ describe('CatalogComponent', () => {
     expect(fixture.nativeElement.querySelector('[role="status"]').textContent).toContain('Завантажуємо');
   });
 
-  it('renders both JSON titles and honest demo/review labels', () => {
-    response.next([scenarioFixture(), scenarioFixture('truth-under-pressure')]);
+  it('renders the three curated titles in order with honest source and review warnings', () => {
+    response.next([report, selection, quiet] as unknown as Scenario[]);
     fixture.detectChanges();
     const root: HTMLElement = fixture.nativeElement;
-    expect(root.querySelectorAll('.scenario-card').length).toBe(2);
-    expect(root.textContent).toContain('Постачання під тиском');
-    expect(root.textContent).toContain('Професійна правда під тиском');
+    expect([...root.querySelectorAll('.scenario-card h3')].map(node => node.textContent)).toEqual(['Підпис під сумнівом', 'Хто заслуговує на місце?', 'Тиша після шикування']);
     expect(root.textContent).toContain('Без експертного схвалення');
-    expect(root.textContent).toContain('автором не визначена');
-    expect(root.querySelector('.scenario-card a')?.getAttribute('href')).toBe('/scenarios/urgent-supply/play');
+    expect(root.querySelectorAll('[data-demo-disclaimer]').length).toBe(3);
+    expect(root.textContent).toContain('Нормативні посилання та редакції потребують підтвердження');
+    expect(root.textContent).toContain('3 рішення');
+    expect(root.querySelector('.scenario-card a')?.getAttribute('href')).toBe('/scenarios/report-under-pressure/play');
   });
 
   it('shows an empty state', () => {

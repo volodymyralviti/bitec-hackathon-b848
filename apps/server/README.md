@@ -1,5 +1,22 @@
 # Server
 
+## Stage 10D — актуальний публічний демокаталог
+
+У стандартному каталозі та Classroom picker рівно три оригінальні, вигадані й
+знеособлені кейси: **«Підпис під сумнівом»** (report-under-pressure),
+**«Хто заслуговує на місце?»** (fair-selection), **«Тиша після шикування»**
+(quiet-after-formation), у такому порядку. Кожний маршрут має рівно три рішення.
+Без ключа можна пройти кейс або імпортувати його JSON у /studio/demo.
+
+Демо · Потребує експертної перевірки. Нормативні редакції NOT VERIFIED,
+expert review PENDING. Оригінали draft/demoOnly/aiAssisted, sources unverified,
+choices uncertain. Це не юридично підтверджена навчальна публікація.
+
+Два CIDS-адаптовані кейси збережено як архівні приклади й регресійний контент,
+вони не входять до основного каталогу. CIDS лишається методичним орієнтиром;
+нові три ситуації не є адаптаціями CIDS чи описами реальних подій.
+
+
 NestJS 11 / Express / CommonJS. Stage 06 adds versioned Scenario API and protected Studio storage.
 
 ## Stage 10B — source metadata
@@ -21,6 +38,22 @@ See [Classroom protocol, privacy and tests](src/classroom/README.md). No partici
 written to the scenario store. Author/reviewer capabilities do not control classroom rooms.
 
 ## Run and access
+
+### Публічна Demo Studio та deployment
+
+`/studio/demo` працює лише в Angular memory, без server sessions або author API.
+Серверні guards не змінені. `/studio` лишається захищеним режимом: ключ задає
+адміністратор у AUTHOR_KEY, reviewer — окремо в REVIEWER_KEY. Порожні значення
+вимикають ролі; public demo ключів не потребує. Не копіюйте ключі у frontend.
+Після reload автор повторно входить і відкриває збережену приватну версію.
+
+Додано необов’язковий HOST для bind address; production same-host proxy має
+HOST=127.0.0.1, PORT=3000. Без HOST збережена попередня поведінка listen.
+Підготовлені systemd/Nginx/env приклади й [український runbook](../../docs/DEPLOYMENT_RUNBOOK_UA.md):
+HTTPS, WebSocket upgrade, rate limits, відключені request logs, persistent store,
+single-process режим, backups/rollback. Реального deployment не виконано.
+Classroom PIN залишається публічним locator у чинному join-link; секрети ведучого,
+participant tokens і голоси не додаються до URL або logs. Restart очищає кімнати.
 
 Build workspace packages first (`pnpm build`), then `pnpm dev:api` or
 `pnpm --filter server start:prod`. `PORT` defaults to 3000.
@@ -51,7 +84,7 @@ This is a durable MVP adapter, **not a production PostgreSQL implementation**. A
 `DATABASE_URL` fails startup rather than silently falling back; implement/test a PostgreSQL
 adapter before using that configuration. No ORM/dependencies/infrastructure were replaced.
 
-On first start only, the explicit `content/scenarios/index.json` seeds the two demo-only cases.
+On every start, `content/scenarios/index.json` defines the ordered read-only curated demo catalog, independently of existing author records. First-start persistence still creates demo seed snapshots. Existing stores are not overwritten. API demo projections are not expert approval; source JSON remains draft. See ADR 0004 and the Stage 10D report.
 Stored copies use `publicationStatus=demo`; original JSON remains unchanged (`draft`). Human
 review and source verification remain untouched. Existing stores are never overwritten by seeds.
 Seed path may be set with `SCENARIO_CONTENT_DIR`. Invalid stored/seed content fails startup.

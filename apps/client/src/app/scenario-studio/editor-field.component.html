@@ -10,14 +10,14 @@
       </label>
     }
     @for (key of keys(); track key) {
-      <app-editor-field [control]="group.controls[key]" [name]="key" [parent]="name()" [path]="childPath(key)" [nodeIds]="nodeIds()" [sourceIds]="sourceIds()" [issues]="issues()" [identityLocked]="identityLocked()" [scenarioForm]="scenarioForm()" />
+      <app-editor-field [control]="group.controls[key]" [name]="key" [parent]="name()" [path]="childPath(key)" [nodeIds]="nodeIds()" [sourceIds]="sourceIds()" [issues]="issues()" [identityLocked]="identityLocked()" [scenarioForm]="scenarioForm()" [demo]="demo()" />
     }
   </details>
 } @else if (array(); as array) {
   <fieldset class="editor-array" [attr.data-field-path]="pathKey()" tabindex="-1"><legend>{{ title() }}</legend>
     @for (item of array.controls; track item; let index = $index) {
       <div class="editor-array-item">
-        <app-editor-field [control]="item" [name]="'' + index" [parent]="name()" [path]="childPath(index)" [nodeIds]="nodeIds()" [sourceIds]="sourceIds()" [issues]="issues()" [identityLocked]="identityLocked()" [scenarioForm]="scenarioForm()" />
+        <app-editor-field [control]="item" [name]="'' + index" [parent]="name()" [path]="childPath(index)" [nodeIds]="nodeIds()" [sourceIds]="sourceIds()" [issues]="issues()" [identityLocked]="identityLocked()" [scenarioForm]="scenarioForm()" [demo]="demo()" />
         @if (usedSource(index)) { <p class="small">Джерело використовується. Спочатку змініть посилання у вузлах, choices або debrief.</p> }
         <button type="button" class="text-button" [disabled]="control().disabled || usedSource(index)" (click)="remove(index)">Прибрати {{ name() === 'nodes' ? 'вузол' : 'пункт' }} {{ index + 1 }}</button>
       </div>
@@ -29,14 +29,15 @@
 } @else {
   <label class="editor-input" [class.editor-checkbox]="boolean()">
     <span>{{ title() }}</span>
-    @if (boolean()) { <input type="checkbox" [formControl]="field()" [attr.data-field-path]="pathKey()" /> }
+    @if (boolean()) { <input type="checkbox" [formControl]="field()" [attr.disabled]="demo() && name() === 'demoOnly' ? '' : null" [attr.data-field-path]="pathKey()" /> }
     @else if (options(); as options) {
       <select [formControl]="field()" [attr.data-field-path]="pathKey()">
         <option value="">Оберіть значення</option>
         @for (option of options; track option.value) { <option [value]="option.value" [disabled]="restrictedOption(option.value)">{{ option.label }}</option> }
       </select>
     } @else if (longText()) { <textarea [formControl]="field()" rows="3" [attr.data-field-path]="pathKey()"></textarea> }
-    @else { <input [type]="numeric() ? 'number' : date() ? 'date' : 'text'" [formControl]="field()" [readonly]="readonlyField()" [attr.data-field-path]="pathKey()" /> }
+    @else if (numeric()) { <input type="number" [formControl]="field()" [readonly]="readonlyField()" [attr.data-field-path]="pathKey()" /> }
+    @else { <input [type]="date() ? 'date' : 'text'" [formControl]="field()" [readonly]="readonlyField() || (demo() && name() === 'verifiedAt')" [attr.data-field-path]="pathKey()" /> }
   </label>
 }
 @if (errors().length) { <ul class="field-errors" role="status">@for (error of errors(); track $index) { <li>{{ error.message }} ({{ error.code }})</li> }</ul> }

@@ -1,27 +1,45 @@
 <header class="page-heading"><p class="eyebrow">Scenario Studio</p><h1 class="scenario-title">Майстерня сценаріїв</h1><p class="lead">Вузли, альтернативи й джерела як дані. Збереження чернетки не відкриває її учасникам.</p></header>
 @if (message()) { <p class="learning-note" role="status" aria-live="polite">{{ message() }}</p> }
-@if (!api.authorized()) {
+@if (demo) {
+  <aside class="learning-note" role="status"><h2>Демонстраційна майстерня — без ключа</h2>
+    <p>Чернетка зберігається лише під час поточної роботи в цій вкладці. Щоб не втратити результат, експортуйте JSON.</p>
+    <p>Опис ситуації → рішення та наслідки → джерела → перевірка → попередній перегляд → експорт.</p>
+    <p>Нічого не публікується й не надсилається до авторського сховища. Після перезавантаження вкладки почніть знову або імпортуйте свій JSON.</p>
+  </aside>
+} @else {
+  <section class="state-panel" aria-labelledby="try-studio-heading"><h2 id="try-studio-heading">Створіть свою навчальну дилему</h2>
+    <p>Спробуйте всі форми, джерела та проходження без реєстрації. Результат можна завантажити у JSON.</p>
+    <a routerLink="/studio/demo" class="button" data-action="try-studio">Спробувати майстерню</a>
+  </section>
+}
+@if (!demo && !api.authorized()) {
   <section class="state-panel" aria-labelledby="access-heading">
     <h2 id="access-heading">Захищений доступ автора</h2>
+    <p>Увійти як автор — для роботи з приватними версіями на сервері.</p>
     <p>Введіть ключ, отриманий від адміністратора сервера. Він використовується лише у цій вкладці й не додається до експорту.</p>
     <label class="editor-input">Ключ автора<input type="password" autocomplete="off" [formControl]="keyControl" data-action="author-key" /></label>
     <button type="button" class="button" (click)="login()" [disabled]="busy() || !keyControl.value" data-action="login">Відкрити Studio</button>
   </section>
 } @else {
-  <div class="actions"><button type="button" class="button" (click)="newDraft()" [disabled]="busy()" data-action="new-draft">Нова чернетка з трьома рішеннями</button><button type="button" class="button button-secondary" (click)="refresh()" [disabled]="busy()">Оновити список</button><button type="button" class="text-button" (click)="logout()">Закрити доступ і очистити вкладку</button></div>
+  <div class="actions"><button type="button" class="button" (click)="newDraft()" [disabled]="busy()" data-action="new-draft">{{ demo ? 'Створити навчальну дилему' : 'Нова чернетка з трьома рішеннями' }}</button>
+    @if (demo) { <button type="button" class="text-button" (click)="resetDemo()" data-action="reset-demo">Скинути демо</button> }
+    @else { <button type="button" class="button button-secondary" (click)="refresh()" [disabled]="busy()">Оновити список</button><button type="button" class="text-button" (click)="logout()">Закрити доступ і очистити вкладку</button> }
+  </div>
+  @if (!demo) {
   <details class="reading-details"><summary>Збережені сценарії та версії ({{ records().length }})</summary>
     <ul class="studio-records">@for (record of records(); track record.scenario.id + '@' + record.scenario.version) {
       <li><button type="button" class="text-button" (click)="open(record)" [disabled]="busy()" [attr.data-record-id]="record.scenario.id + '@' + record.scenario.version">{{ record.scenario.title }} · {{ record.scenario.version }} · {{ record.scenario.publicationStatus }} / {{ record.scenario.contentReview.status }} · ревізія {{ record.revision }}</button></li>
     }</ul>
   </details>
+  }
   <aside class="learning-note">Не вводьте персональні, службові чи операційні дані. Шаблон і автоматична валідація не є експертним review. Завершене схвалення доступне лише окремому фактичному рецензенту через захищений API.</aside>
   <aside class="learning-note">У розділі «Нормативна база та джерела» вкажіть реквізити, точну норму, редакцію та релевантність. Пов’яжіть ID джерела з вузлом, choice або debrief через «Посилання на джерела». URL перевіряється лише за форматом; звірка документа та експертиза застосовності виконуються окремо. Невідому редакцію залишайте порожньою.</aside>
   @if (workspace.form(); as form) {
     <div class="studio-toolbar actions">
-      <button type="button" class="button" [disabled]="busy() || form.disabled" (click)="save()" data-action="save-draft">Зберегти приватну версію</button>
+      @if (!demo) { <button type="button" class="button" [disabled]="busy() || form.disabled" (click)="save()" data-action="save-draft">Зберегти приватну версію</button> }
       <button type="button" class="button button-secondary" [disabled]="busy()" (click)="validate()" data-action="validate">Перевірити</button>
-      <button type="button" class="button button-secondary" [disabled]="busy()" (click)="validateOnServer()">Перевірити на сервері</button>
-      <button type="button" class="button button-secondary" [disabled]="busy()" (click)="preview()" data-action="preview">Preview як учасник</button>
+      @if (!demo) { <button type="button" class="button button-secondary" [disabled]="busy()" (click)="validateOnServer()">Перевірити на сервері</button> }
+      <button type="button" class="button button-secondary" [disabled]="busy()" (click)="preview()" data-action="preview">{{ demo ? 'Попередній перегляд' : 'Preview як учасник' }}</button>
       <button type="button" class="button button-secondary" [disabled]="busy()" (click)="exportJson()" data-action="export">Експорт JSON</button>
     </div>
     @if (errors().length) {
@@ -39,7 +57,7 @@
       </section>
     } @else if (form.disabled) { <button type="button" class="button button-secondary" (click)="copyImported()">Створити приватну копію імпортованого матеріалу</button> }
     <fieldset class="studio-editor" [disabled]="busy()"><legend>Форма сценарію</legend>
-      @for (key of keys(); track key) { <app-editor-field [control]="form.controls[key]" [name]="key" [path]="[key]" [nodeIds]="ids('nodes', 'id')" [sourceIds]="ids('sources', 'sourceId')" [issues]="errors()" [identityLocked]="!!workspace.record()" [scenarioForm]="form" /> }
+      @for (key of keys(); track key) { <app-editor-field [control]="form.controls[key]" [name]="key" [path]="[key]" [nodeIds]="ids('nodes', 'id')" [sourceIds]="ids('sources', 'sourceId')" [issues]="errors()" [identityLocked]="!!workspace.record()" [scenarioForm]="form" [demo]="demo" /> }
     </fieldset>
   }
   <details class="reading-details"><summary>Імпорт JSON</summary>

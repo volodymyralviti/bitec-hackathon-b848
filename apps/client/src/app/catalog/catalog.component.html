@@ -5,6 +5,11 @@
   <p class="muted">Українською · без реєстрації · без оцінювання особистості</p>
 </section>
 
+<nav class="actions" aria-label="Оберіть спосіб роботи">
+  <a href="#catalog-heading" class="button button-secondary">Пройти дилему</a>
+  <a routerLink="/classroom/host" class="button button-secondary">Провести заняття</a>
+  <a routerLink="/studio/demo" class="button" data-action="try-studio">Спробувати майстерню</a>
+</nav>
 <aside class="learning-note">
   <strong>Мета — обґрунтувати вибір.</strong>
   <p>Порівнюйте користь, ризики та вплив на різних людей. Показники описують авторську модель наслідків, а не ваші моральні якості.</p>
@@ -31,10 +36,12 @@
           <article class="scenario-card">
             <div class="card-topline"><span class="case-number">Ситуація {{ position + 1 }}</span><span>Версія {{ scenario.version }}</span></div>
             <h3>{{ scenario.title }}</h3>
-            <p>{{ scenario.summary }}</p>
+            <p>{{ presentation[scenario.id]?.summary ?? scenario.summary }}</p>
+            @if (presentation[scenario.id]; as card) {
+              <p class="small">{{ card.conflict }} · 3 рішення</p>
+            }
             <app-scenario-status [scenario]="scenario" />
-            <p class="muted small">Складність: автором не визначена. Усі варіанти потребують пояснення.</p>
-            <a class="button" [routerLink]="['/scenarios', scenario.id, 'play']" [attr.aria-label]="'Відкрити: ' + scenario.title">Відкрити сценарій <span aria-hidden="true">↗</span></a>
+            <a class="button" [routerLink]="['/scenarios', scenario.id, 'play']" [attr.aria-label]="'Пройти сценарій: ' + scenario.title">Пройти сценарій <span aria-hidden="true">↗</span></a>
             <a class="preview-link" [routerLink]="['/scenarios', scenario.id, 'preview']">Лише вступ і джерела</a>
           </article>
         }

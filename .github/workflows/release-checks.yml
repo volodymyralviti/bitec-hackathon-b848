@@ -60,6 +60,7 @@ jobs:
         run: |
           node apps/client/scripts/smoke-solo.mjs
           node apps/client/scripts/smoke-studio.mjs
+          node apps/client/scripts/smoke-demo-studio.mjs
           node apps/client/scripts/smoke-classroom.mjs
       - run: git diff --check
       # No deploy, publish, app secrets, write permissions, learner data or temp-store artifacts.

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { inspectRoutes } from './routes.mjs';
+import { validateCollegeDrafts } from './college-qa.mjs';
 
 const allowed = new Set(['--inspect-only', '--write-maps']);
 for (const arg of process.argv.slice(2)) assert.ok(allowed.has(arg), `Unknown option: ${arg}`);
@@ -47,3 +48,4 @@ for (const name of ['urgent-supply', 'truth-under-pressure']) {
   console.log(`${name}: ${report.nodeCount} nodes, ${report.decisionNodeCount} decisions, ${report.endingCount} endings, ${report.routeCount} routes, ${report.minDecisions}..${report.maxDecisions} decisions per route, ${report.delayedEventCount} delayed events`);
 }
 console.log(inspectOnly ? 'Static route evidence OK; public validator gate remains NOT RUN.' : 'PASS: both content files pass the public validator and exhaustive static route checks. Engine was not invoked.');
+if (!inspectOnly) validateCollegeDrafts();

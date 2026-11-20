@@ -1,0 +1,560 @@
+{
+  "scenarioId": "quiet-after-formation",
+  "version": "1.0.0",
+  "contentCreatedAt": "2026-11-20",
+  "analysis": "Content oracle computed from route membership and authored deltas; compared with real public engine, not an application runtime.",
+  "nodeCount": 12,
+  "choiceCount": 14,
+  "endingCount": 4,
+  "routeCount": 8,
+  "minDecisions": 3,
+  "maxDecisions": 3,
+  "routes": [
+    {
+      "route": 1,
+      "nodes": [
+        "quiet-intro",
+        "quiet-first",
+        "quiet-second-a",
+        "quiet-third-aa",
+        "quiet-ending-1"
+      ],
+      "choices": [
+        {
+          "nodeId": "quiet-first",
+          "choiceId": "quiet-choice-1-1"
+        },
+        {
+          "nodeId": "quiet-second-a",
+          "choiceId": "quiet-choice-2-1"
+        },
+        {
+          "nodeId": "quiet-third-aa",
+          "choiceId": "quiet-choice-4-1"
+        }
+      ],
+      "ending": "quiet-ending-1",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 4,
+        "fairness": 4,
+        "trust": 4,
+        "effectiveness": -5
+      },
+      "applied": [
+        "quiet-delayed-1",
+        "quiet-delayed-2",
+        "quiet-delayed-4"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "quiet-delayed-1",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "quiet-delayed-2",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "quiet-third-aa"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "quiet-delayed-4",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "quiet-third-aa"
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "discipline-110-111",
+        "internal-11",
+        "internal-49",
+        "quiet-editorial"
+      ]
+    },
+    {
+      "route": 2,
+      "nodes": [
+        "quiet-intro",
+        "quiet-first",
+        "quiet-second-a",
+        "quiet-third-aa",
+        "quiet-ending-2"
+      ],
+      "choices": [
+        {
+          "nodeId": "quiet-first",
+          "choiceId": "quiet-choice-1-1"
+        },
+        {
+          "nodeId": "quiet-second-a",
+          "choiceId": "quiet-choice-2-1"
+        },
+        {
+          "nodeId": "quiet-third-aa",
+          "choiceId": "quiet-choice-4-2"
+        }
+      ],
+      "ending": "quiet-ending-2",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 3,
+        "fairness": 3,
+        "trust": 6,
+        "effectiveness": -5
+      },
+      "applied": [
+        "quiet-delayed-1",
+        "quiet-delayed-2",
+        "quiet-delayed-4"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "quiet-delayed-1",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "quiet-delayed-2",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "quiet-third-aa"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "quiet-delayed-4",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "quiet-third-aa"
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "discipline-110-111",
+        "internal-11",
+        "internal-49",
+        "quiet-editorial"
+      ]
+    },
+    {
+      "route": 3,
+      "nodes": [
+        "quiet-intro",
+        "quiet-first",
+        "quiet-second-a",
+        "quiet-third-ab",
+        "quiet-ending-1"
+      ],
+      "choices": [
+        {
+          "nodeId": "quiet-first",
+          "choiceId": "quiet-choice-1-1"
+        },
+        {
+          "nodeId": "quiet-second-a",
+          "choiceId": "quiet-choice-2-2"
+        },
+        {
+          "nodeId": "quiet-third-ab",
+          "choiceId": "quiet-choice-5-1"
+        }
+      ],
+      "ending": "quiet-ending-1",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 2,
+        "fairness": 3,
+        "trust": 6,
+        "effectiveness": -3
+      },
+      "applied": [
+        "quiet-delayed-1",
+        "quiet-delayed-5"
+      ],
+      "unrealized": [
+        "quiet-delayed-2"
+      ],
+      "delayed": [
+        {
+          "id": "quiet-delayed-1",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "quiet-delayed-2",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "quiet-third-aa"
+          },
+          "expected": "unrealized"
+        },
+        {
+          "id": "quiet-delayed-5",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "discipline-110-111",
+        "internal-11",
+        "internal-49",
+        "quiet-editorial"
+      ]
+    },
+    {
+      "route": 4,
+      "nodes": [
+        "quiet-intro",
+        "quiet-first",
+        "quiet-second-a",
+        "quiet-third-ab",
+        "quiet-ending-3"
+      ],
+      "choices": [
+        {
+          "nodeId": "quiet-first",
+          "choiceId": "quiet-choice-1-1"
+        },
+        {
+          "nodeId": "quiet-second-a",
+          "choiceId": "quiet-choice-2-2"
+        },
+        {
+          "nodeId": "quiet-third-ab",
+          "choiceId": "quiet-choice-5-2"
+        }
+      ],
+      "ending": "quiet-ending-3",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 2,
+        "fairness": 4,
+        "trust": 4,
+        "effectiveness": -1
+      },
+      "applied": [
+        "quiet-delayed-1",
+        "quiet-delayed-5"
+      ],
+      "unrealized": [
+        "quiet-delayed-2"
+      ],
+      "delayed": [
+        {
+          "id": "quiet-delayed-1",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "quiet-delayed-2",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "quiet-third-aa"
+          },
+          "expected": "unrealized"
+        },
+        {
+          "id": "quiet-delayed-5",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "discipline-110-111",
+        "internal-11",
+        "internal-49",
+        "quiet-editorial"
+      ]
+    },
+    {
+      "route": 5,
+      "nodes": [
+        "quiet-intro",
+        "quiet-first",
+        "quiet-second-b",
+        "quiet-third-ba",
+        "quiet-ending-2"
+      ],
+      "choices": [
+        {
+          "nodeId": "quiet-first",
+          "choiceId": "quiet-choice-1-2"
+        },
+        {
+          "nodeId": "quiet-second-b",
+          "choiceId": "quiet-choice-3-1"
+        },
+        {
+          "nodeId": "quiet-third-ba",
+          "choiceId": "quiet-choice-6-1"
+        }
+      ],
+      "ending": "quiet-ending-2",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 3,
+        "fairness": 5,
+        "trust": -3,
+        "effectiveness": 1
+      },
+      "applied": [
+        "quiet-delayed-3",
+        "quiet-delayed-6"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "quiet-delayed-3",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "quiet-second-b"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "quiet-delayed-6",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "quiet-third-ba"
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "discipline-110-111",
+        "internal-11",
+        "internal-49",
+        "quiet-editorial"
+      ]
+    },
+    {
+      "route": 6,
+      "nodes": [
+        "quiet-intro",
+        "quiet-first",
+        "quiet-second-b",
+        "quiet-third-ba",
+        "quiet-ending-4"
+      ],
+      "choices": [
+        {
+          "nodeId": "quiet-first",
+          "choiceId": "quiet-choice-1-2"
+        },
+        {
+          "nodeId": "quiet-second-b",
+          "choiceId": "quiet-choice-3-1"
+        },
+        {
+          "nodeId": "quiet-third-ba",
+          "choiceId": "quiet-choice-6-2"
+        }
+      ],
+      "ending": "quiet-ending-4",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 3,
+        "fairness": 4,
+        "trust": -2,
+        "effectiveness": 2
+      },
+      "applied": [
+        "quiet-delayed-3",
+        "quiet-delayed-6"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "quiet-delayed-3",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "quiet-second-b"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "quiet-delayed-6",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "quiet-third-ba"
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "discipline-110-111",
+        "internal-11",
+        "internal-49",
+        "quiet-editorial"
+      ]
+    },
+    {
+      "route": 7,
+      "nodes": [
+        "quiet-intro",
+        "quiet-first",
+        "quiet-second-b",
+        "quiet-third-bb",
+        "quiet-ending-3"
+      ],
+      "choices": [
+        {
+          "nodeId": "quiet-first",
+          "choiceId": "quiet-choice-1-2"
+        },
+        {
+          "nodeId": "quiet-second-b",
+          "choiceId": "quiet-choice-3-2"
+        },
+        {
+          "nodeId": "quiet-third-bb",
+          "choiceId": "quiet-choice-7-1"
+        }
+      ],
+      "ending": "quiet-ending-3",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 3,
+        "fairness": 5,
+        "trust": 1,
+        "effectiveness": -2
+      },
+      "applied": [
+        "quiet-delayed-3",
+        "quiet-delayed-7"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "quiet-delayed-3",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "quiet-second-b"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "quiet-delayed-7",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "discipline-110-111",
+        "internal-11",
+        "internal-49",
+        "quiet-editorial"
+      ]
+    },
+    {
+      "route": 8,
+      "nodes": [
+        "quiet-intro",
+        "quiet-first",
+        "quiet-second-b",
+        "quiet-third-bb",
+        "quiet-ending-4"
+      ],
+      "choices": [
+        {
+          "nodeId": "quiet-first",
+          "choiceId": "quiet-choice-1-2"
+        },
+        {
+          "nodeId": "quiet-second-b",
+          "choiceId": "quiet-choice-3-2"
+        },
+        {
+          "nodeId": "quiet-third-bb",
+          "choiceId": "quiet-choice-7-2"
+        }
+      ],
+      "ending": "quiet-ending-4",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 2,
+        "fairness": 6,
+        "trust": 2,
+        "effectiveness": -2
+      },
+      "applied": [
+        "quiet-delayed-3",
+        "quiet-delayed-7"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "quiet-delayed-3",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "quiet-second-b"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "quiet-delayed-7",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "discipline-110-111",
+        "internal-11",
+        "internal-49",
+        "quiet-editorial"
+      ]
+    }
+  ]
+}

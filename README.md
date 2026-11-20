@@ -1,7 +1,24 @@
 # Ethical Dilemmas Simulator
 
+## Stage 10D — актуальний публічний демокаталог
+
+У стандартному каталозі та Classroom picker рівно три оригінальні, вигадані й
+знеособлені кейси: **«Підпис під сумнівом»** (report-under-pressure),
+**«Хто заслуговує на місце?»** (fair-selection), **«Тиша після шикування»**
+(quiet-after-formation), у такому порядку. Кожний маршрут має рівно три рішення.
+Без ключа можна пройти кейс або імпортувати його JSON у /studio/demo.
+
+Демо · Потребує експертної перевірки. Нормативні редакції NOT VERIFIED,
+expert review PENDING. Оригінали draft/demoOnly/aiAssisted, sources unverified,
+choices uncertain. Це не юридично підтверджена навчальна публікація.
+
+Два CIDS-адаптовані кейси збережено як архівні приклади й регресійний контент,
+вони не входять до основного каталогу. CIDS лишається методичним орієнтиром;
+нові три ситуації не є адаптаціями CIDS чи описами реальних подій.
+
+
 Освітній симулятор етичних дилем українською мовою. Є Angular/NestJS, Scenario DSL
-та два demo-only CIDS-inspired JSON. Stage 05 додає повний Angular solo-прохід:
+та три основні demo-only військово-освітні JSON і два архівні CIDS-приклади. Stage 05 додає повний Angular solo-прохід:
 каталог → narrative/рішення → наслідки → ending → debrief, через готовий `@eds/scenario-engine`.
 Деталі фактичного стану й smoke: [README клієнта](apps/client/README.md).
 
@@ -29,7 +46,7 @@ apps/client/       Angular 21, standalone компоненти, Jasmine/Karma
 apps/server/       NestJS 11 + Express, CommonJS, Jest/Supertest
 packages/scenario-schema/ незалежний DSL v1, Zod, graph/provenance validation
 packages/scenario-engine/ детермінований runtime без framework/network залежностей
-content/scenarios/ два сценарії й явний JSON-індекс для static adapter
+content/scenarios/ три демосценарії, два архівні CIDS та явний JSON-індекс
 ```
 
 Порожні каталоги не відтворюються Git до додавання файлів.

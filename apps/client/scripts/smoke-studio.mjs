@@ -123,6 +123,12 @@ try {
   const editedRecord = await privateRead.json();
   assert.equal(editedRecord.revision, 2);
   assert.equal(editedRecord.scenario.title, 'Навчальний простір: доступність і термін — уточнено');
+  // A hard reload loses only the tab capability, not the persisted private draft.
+  await send('Page.reload'); await wait('!!document.querySelector("[data-action=author-key]")');
+  await fill('[data-action=author-key]', api.authorKey); await click('[data-action=login]');
+  await wait('!!document.querySelector(\'[data-record-id="browser-authored@1.0.0"]\')');
+  await click('[data-record-id="browser-authored@1.0.0"]');
+  await wait('!!document.querySelector("[data-action=export]")');
   await screenshot('studio-editor-desktop');
   await click('[data-action=export]');
   const exportedFile = path.join(downloads, 'browser-authored-1.0.0.json');

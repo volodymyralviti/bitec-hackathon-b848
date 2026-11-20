@@ -1,0 +1,28 @@
+[Unit]
+Description=Ethical Dilemmas Simulator API
+After=network.target
+
+[Service]
+Type=simple
+User=eds
+Group=eds
+WorkingDirectory=/srv/eds/current/apps/server
+ExecStart=/usr/bin/node /srv/eds/current/apps/server/dist/main.js
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/eds/api.env
+StateDirectory=eds
+StateDirectoryMode=0700
+UMask=0077
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/eds
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

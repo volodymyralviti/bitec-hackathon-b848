@@ -1,0 +1,560 @@
+{
+  "scenarioId": "report-under-pressure",
+  "version": "1.0.0",
+  "contentCreatedAt": "2026-11-20",
+  "analysis": "Content oracle computed from route membership and authored deltas; compared with real public engine, not an application runtime.",
+  "nodeCount": 12,
+  "choiceCount": 14,
+  "endingCount": 4,
+  "routeCount": 8,
+  "minDecisions": 3,
+  "maxDecisions": 3,
+  "routes": [
+    {
+      "route": 1,
+      "nodes": [
+        "report-intro",
+        "report-first",
+        "report-second-a",
+        "report-third-aa",
+        "report-ending-1"
+      ],
+      "choices": [
+        {
+          "nodeId": "report-first",
+          "choiceId": "report-choice-1-1"
+        },
+        {
+          "nodeId": "report-second-a",
+          "choiceId": "report-choice-2-1"
+        },
+        {
+          "nodeId": "report-third-aa",
+          "choiceId": "report-choice-4-1"
+        }
+      ],
+      "ending": "report-ending-1",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 4,
+        "fairness": 4,
+        "trust": 2,
+        "effectiveness": -6
+      },
+      "applied": [
+        "report-delayed-1",
+        "report-delayed-2",
+        "report-delayed-4"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "report-delayed-1",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "report-delayed-2",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "report-third-aa"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "report-delayed-4",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "report-third-aa"
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "academic-8-scope",
+        "internal-11",
+        "internal-16",
+        "report-editorial"
+      ]
+    },
+    {
+      "route": 2,
+      "nodes": [
+        "report-intro",
+        "report-first",
+        "report-second-a",
+        "report-third-aa",
+        "report-ending-2"
+      ],
+      "choices": [
+        {
+          "nodeId": "report-first",
+          "choiceId": "report-choice-1-1"
+        },
+        {
+          "nodeId": "report-second-a",
+          "choiceId": "report-choice-2-1"
+        },
+        {
+          "nodeId": "report-third-aa",
+          "choiceId": "report-choice-4-2"
+        }
+      ],
+      "ending": "report-ending-2",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 3,
+        "fairness": 3,
+        "trust": 4,
+        "effectiveness": -5
+      },
+      "applied": [
+        "report-delayed-1",
+        "report-delayed-2",
+        "report-delayed-4"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "report-delayed-1",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "report-delayed-2",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "report-third-aa"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "report-delayed-4",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "report-third-aa"
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "academic-8-scope",
+        "internal-11",
+        "internal-16",
+        "report-editorial"
+      ]
+    },
+    {
+      "route": 3,
+      "nodes": [
+        "report-intro",
+        "report-first",
+        "report-second-a",
+        "report-third-ab",
+        "report-ending-1"
+      ],
+      "choices": [
+        {
+          "nodeId": "report-first",
+          "choiceId": "report-choice-1-1"
+        },
+        {
+          "nodeId": "report-second-a",
+          "choiceId": "report-choice-2-2"
+        },
+        {
+          "nodeId": "report-third-ab",
+          "choiceId": "report-choice-5-1"
+        }
+      ],
+      "ending": "report-ending-1",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 6,
+        "fairness": 1,
+        "trust": 1,
+        "effectiveness": -3
+      },
+      "applied": [
+        "report-delayed-1",
+        "report-delayed-5"
+      ],
+      "unrealized": [
+        "report-delayed-2"
+      ],
+      "delayed": [
+        {
+          "id": "report-delayed-1",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "report-delayed-2",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "report-third-aa"
+          },
+          "expected": "unrealized"
+        },
+        {
+          "id": "report-delayed-5",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "academic-8-scope",
+        "internal-11",
+        "internal-16",
+        "report-editorial"
+      ]
+    },
+    {
+      "route": 4,
+      "nodes": [
+        "report-intro",
+        "report-first",
+        "report-second-a",
+        "report-third-ab",
+        "report-ending-3"
+      ],
+      "choices": [
+        {
+          "nodeId": "report-first",
+          "choiceId": "report-choice-1-1"
+        },
+        {
+          "nodeId": "report-second-a",
+          "choiceId": "report-choice-2-2"
+        },
+        {
+          "nodeId": "report-third-ab",
+          "choiceId": "report-choice-5-2"
+        }
+      ],
+      "ending": "report-ending-3",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 5,
+        "fairness": 0,
+        "trust": 3,
+        "effectiveness": -1
+      },
+      "applied": [
+        "report-delayed-1",
+        "report-delayed-5"
+      ],
+      "unrealized": [
+        "report-delayed-2"
+      ],
+      "delayed": [
+        {
+          "id": "report-delayed-1",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 2
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "report-delayed-2",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "report-third-aa"
+          },
+          "expected": "unrealized"
+        },
+        {
+          "id": "report-delayed-5",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "academic-8-scope",
+        "internal-11",
+        "internal-16",
+        "report-editorial"
+      ]
+    },
+    {
+      "route": 5,
+      "nodes": [
+        "report-intro",
+        "report-first",
+        "report-second-b",
+        "report-third-ba",
+        "report-ending-2"
+      ],
+      "choices": [
+        {
+          "nodeId": "report-first",
+          "choiceId": "report-choice-1-2"
+        },
+        {
+          "nodeId": "report-second-b",
+          "choiceId": "report-choice-3-1"
+        },
+        {
+          "nodeId": "report-third-ba",
+          "choiceId": "report-choice-6-1"
+        }
+      ],
+      "ending": "report-ending-2",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 5,
+        "fairness": 3,
+        "trust": 1,
+        "effectiveness": -1
+      },
+      "applied": [
+        "report-delayed-3",
+        "report-delayed-6"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "report-delayed-3",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "report-second-b"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "report-delayed-6",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "report-third-ba"
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "academic-8-scope",
+        "internal-11",
+        "internal-16",
+        "report-editorial"
+      ]
+    },
+    {
+      "route": 6,
+      "nodes": [
+        "report-intro",
+        "report-first",
+        "report-second-b",
+        "report-third-ba",
+        "report-ending-4"
+      ],
+      "choices": [
+        {
+          "nodeId": "report-first",
+          "choiceId": "report-choice-1-2"
+        },
+        {
+          "nodeId": "report-second-b",
+          "choiceId": "report-choice-3-1"
+        },
+        {
+          "nodeId": "report-third-ba",
+          "choiceId": "report-choice-6-2"
+        }
+      ],
+      "ending": "report-ending-4",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 4,
+        "fairness": 3,
+        "trust": -1,
+        "effectiveness": 1
+      },
+      "applied": [
+        "report-delayed-3",
+        "report-delayed-6"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "report-delayed-3",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "report-second-b"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "report-delayed-6",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "report-third-ba"
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "academic-8-scope",
+        "internal-11",
+        "internal-16",
+        "report-editorial"
+      ]
+    },
+    {
+      "route": 7,
+      "nodes": [
+        "report-intro",
+        "report-first",
+        "report-second-b",
+        "report-third-bb",
+        "report-ending-3"
+      ],
+      "choices": [
+        {
+          "nodeId": "report-first",
+          "choiceId": "report-choice-1-2"
+        },
+        {
+          "nodeId": "report-second-b",
+          "choiceId": "report-choice-3-2"
+        },
+        {
+          "nodeId": "report-third-bb",
+          "choiceId": "report-choice-7-1"
+        }
+      ],
+      "ending": "report-ending-3",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 6,
+        "fairness": 1,
+        "trust": -1,
+        "effectiveness": 0
+      },
+      "applied": [
+        "report-delayed-3",
+        "report-delayed-7"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "report-delayed-3",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "report-second-b"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "report-delayed-7",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "academic-8-scope",
+        "internal-11",
+        "internal-16",
+        "report-editorial"
+      ]
+    },
+    {
+      "route": 8,
+      "nodes": [
+        "report-intro",
+        "report-first",
+        "report-second-b",
+        "report-third-bb",
+        "report-ending-4"
+      ],
+      "choices": [
+        {
+          "nodeId": "report-first",
+          "choiceId": "report-choice-1-2"
+        },
+        {
+          "nodeId": "report-second-b",
+          "choiceId": "report-choice-3-2"
+        },
+        {
+          "nodeId": "report-third-bb",
+          "choiceId": "report-choice-7-2"
+        }
+      ],
+      "ending": "report-ending-4",
+      "decisionCount": 3,
+      "finalMetrics": {
+        "transparency": 4,
+        "fairness": 2,
+        "trust": -2,
+        "effectiveness": 3
+      },
+      "applied": [
+        "report-delayed-3",
+        "report-delayed-7"
+      ],
+      "unrealized": [],
+      "delayed": [
+        {
+          "id": "report-delayed-3",
+          "plannedAtDecision": 1,
+          "trigger": {
+            "type": "on_enter_node",
+            "nodeId": "report-second-b"
+          },
+          "expected": "applied"
+        },
+        {
+          "id": "report-delayed-7",
+          "plannedAtDecision": 2,
+          "trigger": {
+            "type": "after_decisions",
+            "count": 1
+          },
+          "expected": "applied"
+        }
+      ],
+      "debriefSourceIds": [
+        "academic-8-scope",
+        "internal-11",
+        "internal-16",
+        "report-editorial"
+      ]
+    }
+  ]
+}

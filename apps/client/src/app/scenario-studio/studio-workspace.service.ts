@@ -6,6 +6,7 @@ import { EditorGroup, buildControl } from './form-model';
 import type { StudioRecord } from './studio-api.service';
 import { inject } from '@angular/core';
 import { StudioApi } from './studio-api.service';
+import { DEMO_STUDIO, validateDemoScenario } from './studio-mode';
 
 @Injectable({ providedIn: 'root' })
 export class StudioWorkspace {
@@ -24,11 +25,12 @@ export class StudioWorkspace {
 export class StudioPreviewRepository extends ScenarioRepository {
   private readonly workspace = inject(StudioWorkspace);
   private readonly api = inject(StudioApi);
+  private readonly demo = inject(DEMO_STUDIO);
   override list() { return of([]); }
   override getById(id: string) {
     const scenario = this.workspace.preview();
-    const result = validateScenario(scenario);
-    return this.api.authorized() && result.success && result.data.id === id
+    const result = this.demo ? validateDemoScenario(scenario) : validateScenario(scenario);
+    return (this.demo || this.api.authorized()) && result.success && result.data.id === id
       ? of(result.data) : throwError(() => new ScenarioLoadError('not-found', 'Локальний preview відсутній або втрачений після reload.'));
   }
 }

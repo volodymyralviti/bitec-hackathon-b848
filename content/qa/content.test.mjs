@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import test from 'node:test';
 import { inspectRoutes } from './routes.mjs';
 import './source-engine.test.mjs';
+import './college.test.mjs';
 
 const load = name => JSON.parse(readFileSync(new URL(`../scenarios/${name}.json`, import.meta.url), 'utf8'));
 const requireSchema = createRequire(new URL('../../packages/scenario-schema/package.json', import.meta.url));

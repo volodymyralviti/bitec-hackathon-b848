@@ -1,5 +1,53 @@
 ﻿# Angular Solo Simulator — Stage 05
 
+## Stage 10D — актуальний публічний демокаталог
+
+Dev server не prebundle-ить локальні @eds/scenario-schema та @eds/scenario-engine:
+після зміни їхнього dist Vite може інакше використати старий кеш контракту й
+відхилити нові legal fields попри HTTP 200 від API. Після оновлення angular.json
+перезапустіть `pnpm dev:web`; видаляти контент чи авторське сховище не потрібно.
+
+У стандартному каталозі та Classroom picker рівно три оригінальні, вигадані й
+знеособлені кейси: **«Підпис під сумнівом»** (report-under-pressure),
+**«Хто заслуговує на місце?»** (fair-selection), **«Тиша після шикування»**
+(quiet-after-formation), у такому порядку. Кожний маршрут має рівно три рішення.
+Без ключа можна пройти кейс або імпортувати його JSON у /studio/demo.
+
+Демо · Потребує експертної перевірки. Нормативні редакції NOT VERIFIED,
+expert review PENDING. Оригінали draft/demoOnly/aiAssisted, sources unverified,
+choices uncertain. Це не юридично підтверджена навчальна публікація.
+
+Два CIDS-адаптовані кейси збережено як архівні приклади й регресійний контент,
+вони не входять до основного каталогу. CIDS лишається методичним орієнтиром;
+нові три ситуації не є адаптаціями CIDS чи описами реальних подій.
+
+
+## Для члена журі — публічна майстерня
+
+Відкрийте каталог і натисніть **«Спробувати майстерню»**, або перейдіть до
+`/studio` → «Спробувати майстерню». Прямий маршрут: `/studio/demo`.
+Ключ, реєстрація та адміністратор не потрібні.
+
+1. Натисніть «Створити навчальну дилему»: синтетичний шаблон містить вступ,
+   три послідовні рішення, по дві альтернативи, негайні/відкладені наслідки й debrief.
+2. Замініть підказки своїм текстом, відредагуйте рішення та наслідки через форми.
+3. У «Нормативна база та джерела» додайте реквізити, норму/пункт, редакцію,
+   relevance і питання застосовності. Прив’яжіть sourceId до choice.
+4. Натисніть «Перевірити», виправте помилки, запустіть «Попередній перегляд».
+5. Пройдіть три рішення до розбору. Поверніться до майстерні та експортуйте JSON.
+6. Імпортуйте його назад або натисніть «Скинути демо» після експорту.
+
+Стан існує тільки в пам’яті вкладки. SPA preview/back його зберігає, hard reload
+очищає. Немає localStorage, cookies, telemetry чи server draft persistence.
+Демо не викликає author/reviewer API. Навіть за активного авторського входу
+demo workspace відокремлений. Імпорт approved/checked metadata відхиляється,
+а не перетворюється на довірене схвалення; aiAssisted зберігається відповідно
+до походження шаблону/імпорту. Неповну чернетку можна редагувати; preview/export
+потребують валідного графа. Sources залишаються unverified, legalStatus uncertain.
+
+`/studio` також зберігає захищений авторський вхід. Авторський ключ вводиться
+тільки там і живе у пам’яті вкладки; server save не є дією деморежиму.
+
 ## Stage 10B — нормативна база та джерела
 
 У захищеній Майстерні розширено форму sources: тип і реквізити документа,
@@ -13,7 +61,31 @@ Debrief використовує engine-derived джерела фактично�
 звірка першоджерела й експертна застосовність — різні перевірки.
 
 [Як додати нормативно-правове джерело до сценарію](../../docs/LEGAL_SOURCES_UA.md).
-Окремий публічний Demo Studio та AI-модуль у цьому checkout відсутні.
+Ці ж юридичні форми повторно використовуються в Demo Studio. AI-модуль відсутній.
+
+## Локальні та production перевірки
+
+З кореня: `pnpm install --frozen-lockfile`, `pnpm build`, потім у двох терміналах
+`pnpm dev:api` і `pnpm dev:web` (у PowerShell — `pnpm.cmd`).
+Frontend: http://localhost:4200; API health: http://localhost:3000/api/health.
+Angular proxy передає `/api/**` і WebSocket `/api/classroom-socket` до 3000.
+Гість відкриває http://localhost:4200/studio/demo без env і ключів.
+
+Після build та встановлення CHROME_BIN:
+
+```sh
+node apps/client/scripts/smoke-demo-studio.mjs
+node apps/client/scripts/smoke-studio.mjs
+node apps/client/scripts/smoke-solo.mjs
+node apps/client/scripts/smoke-classroom.mjs
+```
+
+Smoke використовують реальні production assets та Nest у тимчасовому сховищі,
+не поточні ключі/чернетки розробника. Новий smoke фіксує HTTP Content-Type,
+відсутність protected browser requests, незмінність server store, export/import,
+mobile 360px й console errors. Синтетичний UI-export та звіти — у ігнорованому
+`.angular/`; це не матеріали учасників. Hosted CI не запускається локально.
+Див. [deployment runbook](../../docs/DEPLOYMENT_RUNBOOK_UA.md).
 
 ## Stage 07 — аудиторне заняття
 
@@ -53,8 +125,8 @@ host + три учасники, три раунди до debrief, окрему �
 
 `prepare:scenarios` зберігає збірку **schema та engine**, потрібну Solo/Studio/Classroom,
 та готує лише JSON із явного allowlist у `.angular/solo-content/`.
-Angular публікує їх як `/scenarios/index.json`, `/scenarios/urgent-supply.json`
-і `/scenarios/truth-under-pressure.json`; `public/scenarios` не потрібний.
+Angular публікує їх як `/scenarios/index.json`, `/scenarios/report-under-pressure.json`
+і `/scenarios/fair-selection.json` і `/scenarios/quiet-after-formation.json`; `public/scenarios` не потрібний.
 Ці URL мають повертати JSON, не HTML fallback. Default repository Stage 06/07
 залишається API; наявність static assets не вмикає прихований offline fallback.
 
@@ -184,7 +256,7 @@ pnpm dev:web
 
 | URL | Поведінка |
 |---|---|
-| `/`, `/scenarios` | Каталог двох CIDS-inspired JSON; loading/error/empty/retry |
+| `/`, `/scenarios` | Кураторський каталог трьох оригінальних Stage 10C JSON; loading/error/empty/retry |
 | `/scenarios/:id/preview` | Збережений read-only вступ і джерела, без початку run |
 | `/scenarios/:id/play` | Вступ → рішення → feedback → наступний етап → ending |
 | `/scenarios/:id/debrief` | Підсумок тільки завершеного run цього id/version |
@@ -287,7 +359,9 @@ Smoke піднімає localhost static server над production output і за�
 browser/server після перевірки. Вибір і підтвердження виконуються клавішею Enter
 через CDP; Tab/Enter також перевіряють skip-link.
 
-1. `/` → каталог, два сценарії українською.
+Нижче — історичний Stage 05 browser report; актуальні маршрути й результати див. docs/STAGE_10D_REPORT.md.
+
+1. `/` → історичний каталог, два сценарії українською.
 2. `urgent-supply`: `common-brief → shared-questions → recommend-minimum` →
    `limited-service` → debrief → restart.
 3. `truth-under-pressure` на **360×800**: `peer-window → interim-options → test-access`

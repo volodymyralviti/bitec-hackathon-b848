@@ -156,18 +156,7 @@ export class ScenarioService {
   constructor(private readonly store: ScenarioStore) {}
 
   catalog() {
-    const latest = new Map<string, Scenario>();
-    for (const record of this.store.list()) {
-      const scenario = record.scenario;
-      if (
-        publicScenario(scenario) &&
-        (!latest.has(scenario.id) ||
-          compareVersions(scenario.version, latest.get(scenario.id)!.version) >
-            0)
-      )
-        latest.set(scenario.id, scenario);
-    }
-    return [...latest.values()].map((scenario) => ({
+    return this.store.demoCatalog().map(({ scenario }) => ({
       id: scenario.id,
       version: scenario.version,
       title: scenario.title,
@@ -179,6 +168,14 @@ export class ScenarioService {
   }
 
   publicGet(id: string, version?: string): Scenario {
+    const curated = this.store
+      .demoCatalog()
+      .find(
+        (record) =>
+          record.scenario.id === id &&
+          (!version || record.scenario.version === version),
+      );
+    if (curated) return curated.scenario;
     const records = this.store
       .list()
       .filter(

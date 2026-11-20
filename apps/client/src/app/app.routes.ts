@@ -6,6 +6,7 @@ export const routes: Routes = [
   { path: 'classroom/join', title: 'Учасник · Аудиторне заняття', loadComponent: () => import('./classroom/classroom.component').then(module => module.ClassroomComponent) },
   { path: '', pathMatch: 'full', redirectTo: 'scenarios' },
   { path: 'scenarios', title: 'Сценарії · Точка рішення', loadComponent: () => import('./catalog/catalog.component').then(module => module.CatalogComponent) },
+  { path: 'studio/demo', title: 'Спробувати майстерню · Точка рішення', loadChildren: () => import('./scenario-studio/demo.routes').then(module => module.DEMO_STUDIO_ROUTES) },
   { path: 'studio/preview', title: 'Приватний preview · Studio', loadChildren: () => import('./scenario-studio/studio.routes').then(module => module.STUDIO_PREVIEW_ROUTES) },
   { path: 'studio', title: 'Майстерня сценаріїв · Точка рішення', loadComponent: () => import('./scenario-studio/studio.component').then(module => module.StudioComponent) },
   { path: 'scenarios/:id/play', title: 'Проходження · Точка рішення', loadComponent: () => import('./solo/solo-player.component').then(module => module.SoloPlayerComponent) },
