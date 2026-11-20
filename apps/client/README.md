@@ -29,6 +29,25 @@ host + три учасники, три раунди до debrief, окрему �
 Це один серверний процес із volatile кімнатами, не захист від Sybil-клієнтів
 або мережевого спостереження. Classroom не додає реєстрації чи індивідуальної аналітики.
 
+## Запуск і перевірки static assets (hotfix із develop)
+
+Запускайте frontend з кореня через `pnpm dev:web` (у Windows PowerShell —
+`pnpm.cmd dev:web`). Прямий глобальний `ng serve -o` обходить підготовку assets
+і на чистому checkout може дати 404 для `/scenarios/index.json`.
+Якщо такий сервер уже працює на 4200, зупиніть його Ctrl+C перед стандартним запуском.
+
+`prepare:scenarios` зберігає збірку **schema та engine**, потрібну Solo/Studio/Classroom,
+та готує лише JSON із явного allowlist у `.angular/solo-content/`.
+Angular публікує їх як `/scenarios/index.json`, `/scenarios/urgent-supply.json`
+і `/scenarios/truth-under-pressure.json`; `public/scenarios` не потрібний.
+Ці URL мають повертати JSON, не HTML fallback. Default repository Stage 06/07
+залишається API; наявність static assets не вмикає прихований offline fallback.
+
+Hotfix regression-тести включені у `pnpm test`; окремий запуск:
+`pnpm --filter client test:scenario-assets`. Production build додатково перевіряє
+точний allowlist, валідність і незмінність JSON у `dist/client/browser/scenarios/`.
+Приватні/невключені drafts не копіюються, позначки draft/demoOnly/aiAssisted збережені.
+
 ## Stage 06 — API та Studio (попередній етап)
 
 Поточна гілка `scenario_api`. Збережено попередні staged зміни Stage 05.

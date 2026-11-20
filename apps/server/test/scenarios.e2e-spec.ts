@@ -106,6 +106,35 @@ describe('Protected Scenario API', () => {
     expect(response.headers['cache-control']).toBe('no-store');
   });
 
+  it('release privacy gate protects every draft operation and exposes no participant profile endpoints', async () => {
+    const operations = [
+      () => client().get('/api/author/scenarios'),
+      () => client().get('/api/author/scenarios/x/1.0.0'),
+      () => client().get('/api/author/scenarios/x/1.0.0/export'),
+      () => client().post('/api/author/scenarios'),
+      () => client().post('/api/author/scenarios/import'),
+      () => client().post('/api/author/scenarios/validate'),
+      () => client().put('/api/author/scenarios/x/1.0.0'),
+      () => client().post('/api/author/scenarios/x/1.0.0/fork'),
+      () => client().post('/api/author/scenarios/x/1.0.0/demo'),
+      () => client().post('/api/reviewer/scenarios/x/1.0.0/review'),
+      () => client().post('/api/reviewer/scenarios/x/1.0.0/publish'),
+    ];
+    for (const operation of operations) {
+      const response = await operation().expect(401);
+      expect(response.headers['cache-control']).toBe('no-store');
+    }
+    for (const path of [
+      '/api/participants',
+      '/api/profiles',
+      '/api/analytics',
+      '/api/leaderboard',
+      '/api/classrooms/x/votes',
+      '/api/classrooms/x/report',
+    ])
+      await client().get(path).expect(404);
+  });
+
   it('import/export roundtrips and validator reports path/code/message for a broken graph', async () => {
     const scenario = fresh('test-roundtrip');
     const saved = await client()

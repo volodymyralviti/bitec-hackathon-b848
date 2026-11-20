@@ -128,6 +128,14 @@ describe('Anonymous classroom gateway/privacy EDS-024–028/033', () => {
     const room = await create();
     const instructor = await host(room);
     let state = instructor.state;
+    // White-box privacy assertion: closed ballots must actually be erased, not merely hidden.
+    const volatileRooms = Reflect.get(
+      app.get(ClassroomService),
+      'rooms',
+    ) as Map<
+      string,
+      { votes: Map<string, string>; members: Set<string>; hostToken: string }
+    >;
     const clients = await Promise.all([connect(), connect(), connect()]);
     const broadcasts: ClassroomView[] = [];
     instructor.socket.on('room:state', (value) =>
@@ -172,6 +180,7 @@ describe('Anonymous classroom gateway/privacy EDS-024–028/033', () => {
         ).ok,
       ).toBe(false);
       state = await command(instructor.socket, room, state, 'close');
+      expect(volatileRooms.get(room.pin)?.votes.size).toBe(0);
       expect(state.aggregate).toEqual({
         suppressed: false,
         total: 3,
@@ -198,6 +207,8 @@ describe('Anonymous classroom gateway/privacy EDS-024–028/033', () => {
       );
     }
     expect(state.phase).toBe('ended');
+    expect(volatileRooms.get(room.pin)?.members.size).toBe(0);
+    expect(volatileRooms.get(room.pin)?.hostToken).toBe('');
     expect(state.debrief?.decisions).toHaveLength(3);
     expect(state.timeline.some((entry) => entry.kind === 'delayed')).toBe(true);
     const serialized = JSON.stringify(broadcasts);

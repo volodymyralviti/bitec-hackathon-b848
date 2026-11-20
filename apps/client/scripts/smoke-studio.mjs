@@ -98,6 +98,15 @@ try {
   await click('[data-action=save-draft]');
   await wait('document.body.innerText.includes("Публічний каталог не змінено")');
   assert.equal((await fetch(api.origin + '/api/scenarios/browser-authored')).status, 404);
+  // Exercise an actual update of the stored draft, not just creation/template editing.
+  await field('title', 'Навчальний простір: доступність і термін — уточнено');
+  await click('[data-action=save-draft]');
+  await wait('document.body.innerText.includes("ревізія 2")');
+  const privateRead = await fetch(api.origin + '/api/author/scenarios/browser-authored/1.0.0', { headers: { Authorization: `Bearer ${api.authorKey}` } });
+  assert.equal(privateRead.status, 200);
+  const editedRecord = await privateRead.json();
+  assert.equal(editedRecord.revision, 2);
+  assert.equal(editedRecord.scenario.title, 'Навчальний простір: доступність і термін — уточнено');
   await screenshot('studio-editor-desktop');
   await click('[data-action=export]');
   const exportedFile = path.join(downloads, 'browser-authored-1.0.0.json');
@@ -143,7 +152,7 @@ try {
   assert.equal(await evaluate('document.activeElement.dataset.action'), 'export');
   assert.equal(await evaluate('localStorage.length + sessionStorage.length'), 0);
   assert.deepEqual(errors, []);
-  const report = { backend: 'real NestJS, isolated temporary file store', unauthorizedAuthor: 401, disabledReviewer: 503, authoredViaForms: true, decisions: 3, addedChoice: true, brokenGraphBlocked: true, privateDraftHidden: true, browserJsonRoundtrip: true, isolatedParticipantPreview: true, previewDecisions: 3, explicitDemoOnly: true, expertApproved: false, immutableDemo: true, mobile360Overflow: false, keyStoredInBrowserStorage: false, consoleErrors: errors };
+  const report = { backend: 'real NestJS, isolated temporary file store', unauthorizedAuthor: 401, disabledReviewer: 503, authoredViaForms: true, savedDraftEdited: true, decisions: 3, addedChoice: true, brokenGraphBlocked: true, privateDraftHidden: true, browserJsonRoundtrip: true, isolatedParticipantPreview: true, previewDecisions: 3, explicitDemoOnly: true, expertApproved: false, immutableDemo: true, mobile360Overflow: false, keyStoredInBrowserStorage: false, consoleErrors: errors };
   fs.writeFileSync(path.join(artifacts, 'studio-browser-report.json'), JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report, null, 2)); await send('Browser.close');
 } finally { ws?.close(); child.kill(); api.close(); await new Promise(resolve => server.close(resolve)); }
