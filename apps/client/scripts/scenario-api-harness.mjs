@@ -19,7 +19,7 @@ export async function startScenarioApi() {
   const authorKey = randomBytes(32).toString('hex');
   const child = spawn(process.execPath, [path.join(root, 'apps/server/dist/main.js')], {
     cwd: root, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
-    env: { ...process.env, PORT: String(port), DATABASE_URL: '', AUTHOR_KEY: authorKey, REVIEWER_KEY: '', SCENARIO_DATA_FILE: path.join(dataDirectory, 'scenarios.json'), SCENARIO_CONTENT_DIR: path.join(root, 'content/scenarios') }
+    env: { ...process.env, HOST: '127.0.0.1', PORT: String(port), DATABASE_URL: '', AUTHOR_KEY: authorKey, REVIEWER_KEY: '', SCENARIO_DATA_FILE: path.join(dataDirectory, 'scenarios.json'), SCENARIO_CONTENT_DIR: path.join(root, 'content/scenarios') }
   });
   let output = '';
   child.stdout.on('data', data => { output += data; });

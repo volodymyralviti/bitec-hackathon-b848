@@ -127,7 +127,11 @@ describe('Protected Scenario API', () => {
   it('serves only explicit demo seeds and no private draft', async () => {
     const response = await client().get('/api/scenarios').expect(200);
     const list = response.body as Scenario[];
-    expect(list).toHaveLength(2);
+    expect(list.map((item) => item.id)).toEqual([
+      'report-under-pressure',
+      'fair-selection',
+      'quiet-after-formation',
+    ]);
     expect(
       list.every(
         (item) =>
@@ -137,7 +141,7 @@ describe('Protected Scenario API', () => {
       ),
     ).toBe(true);
     expect(response.body).not.toHaveProperty('nodes');
-    await client().get('/api/scenarios/urgent-supply').expect(200);
+    await client().get('/api/scenarios/report-under-pressure').expect(200);
     const scenario = fresh('test-private');
     await client()
       .post('/api/author/scenarios')

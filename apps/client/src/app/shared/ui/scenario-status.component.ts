@@ -6,7 +6,7 @@ import type { Scenario } from '@eds/scenario-schema';
   template: `
     <div class="badges" aria-label="Статус матеріалу">
       @if (scenario().contentReview.demoOnly) {
-        <span class="badge badge-demo">Демонстраційний матеріал</span>
+        <span class="badge badge-demo">Демо · Потребує експертної перевірки</span>
       }
       @if (scenario().contentReview.status !== 'expert_approved') {
         <span class="badge">Без експертного схвалення</span>
@@ -17,6 +17,9 @@ import type { Scenario } from '@eds/scenario-schema';
         <span class="badge">Створено за участю ШІ</span>
       }
     </div>
+    @if (scenario().contentReview.demoOnly && scenario().contentReview.status !== 'expert_approved') {
+      <p class="learning-note" data-demo-disclaimer>Демонстраційний навчальний сценарій. Нормативні посилання та редакції потребують підтвердження; експертний перегляд ще не завершено.</p>
+    }
   `
 })
 export class ScenarioStatusComponent {

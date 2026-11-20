@@ -1,4 +1,5 @@
 <a [routerLink]="navigation.back" class="back-link">← {{ navigation.backLabel }}</a>
+@if (navigation.demo) { <p class="learning-note" role="status">Демо лише у цій вкладці. Після перезавантаження чернетка очиститься. Поверніться до майстерні, щоб експортувати JSON.</p> }
 @if (navigation.privatePreview) { <p class="learning-note" role="status">Приватний preview матеріалу. Цей перегляд не публікує чернетку й не змінює ваше основне проходження.</p> }
 @if (status() === 'loading') {
   <p class="state-panel" role="status">Завантажуємо ситуацію…</p>

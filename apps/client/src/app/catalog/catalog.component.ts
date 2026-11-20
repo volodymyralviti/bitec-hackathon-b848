@@ -11,6 +11,11 @@ import { ScenarioStatusComponent } from '../shared/ui/scenario-status.component'
   templateUrl: './catalog.component.html'
 })
 export class CatalogComponent {
+  readonly presentation: Record<string, { summary: string; conflict: string }> = {
+    'report-under-pressure': { summary: 'Навчальний звіт потрібен сьогодні, але позначки ще не звірені. Як уточнити факти, не залишивши групу без результату?', conflict: 'Правдивість · лояльність · відповідальність' },
+    'fair-selection': { summary: 'Місць у програмі мало. Серед кандидатів — ваш брат і людина з нерівними можливостями підготовки. Як зберегти довіру до відбору?', conflict: 'Неупередженість · справедливість · тиск строків' },
+    'quiet-after-formation': { summary: 'Ви помічаєте принизливе ставлення. Людина потребує підтримки, але боїться розголосу. Як допомогти й залишити місце належній перевірці?', conflict: 'Гідність · довіра · процесуальна справедливість' }
+  };
   private readonly repository = inject(ScenarioRepository);
   private readonly destroyRef = inject(DestroyRef);
   readonly status = signal<'loading' | 'ready' | 'error'>('loading');

@@ -16,6 +16,7 @@ export class EditorFieldComponent {
   readonly sourceIds = input<string[]>([]);
   readonly issues = input<StudioIssue[]>([]);
   readonly identityLocked = input(false);
+  readonly demo = input(false);
   readonly scenarioForm = input<AbstractControl | null>(null);
   readonly labels = FIELD_LABELS;
   group() { const control = this.control(); return control instanceof FormGroup ? control : null; }
@@ -44,7 +45,7 @@ export class EditorFieldComponent {
     };
     return choices[this.name()]?.map(([value, label]) => ({ value, label })) ?? null;
   }
-  restrictedOption(value: string) { return ['expert_checked', 'expert_approved', 'changes_requested'].includes(value); }
+  restrictedOption(value: string) { return ['expert_checked', 'expert_approved', 'changes_requested'].includes(value) || (this.demo() && ['team_checked', 'in_review', 'allowed', 'restricted'].includes(value)); }
   add(type = 'decision') { this.array()?.push(buildControl(freshItem(this.name(), type))); this.control().markAsDirty(); }
   usedSource(index: number): boolean {
     if (this.name() !== 'sources') return false;

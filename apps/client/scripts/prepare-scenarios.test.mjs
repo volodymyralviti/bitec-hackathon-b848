@@ -7,8 +7,14 @@ import { fileURLToPath } from 'node:url';
 
 const client = fileURLToPath(new URL('../', import.meta.url));
 const source = fileURLToPath(new URL('../../../content/scenarios/', import.meta.url));
-const expected = ['urgent-supply.json', 'truth-under-pressure.json'];
+const expected = ['report-under-pressure.json', 'fair-selection.json', 'quiet-after-formation.json'];
 const config = JSON.parse(readFileSync(join(client, 'angular.json'), 'utf8'));
+test('rebuilt workspace contracts bypass stale Vite dependency prebundles', () => {
+  const excluded = config.projects.client.architect.serve.options.prebundle.exclude;
+  assert.ok(excluded.includes('@eds/scenario-schema'));
+  assert.ok(excluded.includes('@eds/scenario-engine'));
+  assert.ok(excluded.includes('zod')); // Transitive schema dependency resolves from its owning workspace package.
+});
 const asset = config.projects.client.architect.build.options.assets.find(item =>
   typeof item === 'object' && item.output.replace(/^\/|\/$/g, '') === 'scenarios');
 
@@ -36,7 +42,7 @@ function sandbox(t) {
   return { root, app, input, output, run };
 }
 
-test('allowlist contains exactly the two approved demo filenames', () => {
+test('allowlist contains exactly the three curated demo filenames (not expert approved)', () => {
   assert.deepEqual(JSON.parse(readFileSync(join(source, 'index.json'), 'utf8')), expected);
   assert.equal(asset.glob, '*.json');
   assert.equal(asset.output.replace(/^\/|\/$/g, ''), 'scenarios');

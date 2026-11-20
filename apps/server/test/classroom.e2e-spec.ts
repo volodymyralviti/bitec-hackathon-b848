@@ -59,7 +59,7 @@ describe('Anonymous classroom gateway/privacy EDS-024–028/033', () => {
   async function create() {
     const result = await request(app.getHttpServer())
       .post('/api/classrooms')
-      .send({ scenarioId: 'urgent-supply' })
+      .send({ scenarioId: 'report-under-pressure' })
       .expect(201);
     return result.body as Credential;
   }
@@ -296,7 +296,7 @@ describe('Anonymous classroom gateway/privacy EDS-024–028/033', () => {
     ).toMatchObject({ ok: false, error: { code: 'INVALID_INPUT' } });
     await request(app.getHttpServer())
       .post('/api/classrooms')
-      .send({ scenarioId: 'urgent-supply', email: 'not accepted' })
+      .send({ scenarioId: 'report-under-pressure', email: 'not accepted' })
       .expect(400);
     await request(app.getHttpServer())
       .post('/api/classrooms')
