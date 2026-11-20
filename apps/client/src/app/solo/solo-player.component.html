@@ -1,0 +1,101 @@
+<a [routerLink]="navigation.back" class="back-link">← {{ navigation.backLabel }}</a>
+@if (navigation.privatePreview) { <p class="learning-note" role="status">Приватний preview матеріалу. Цей перегляд не публікує чернетку й не змінює ваше основне проходження.</p> }
+@if (status() === 'loading') {
+  <p class="state-panel" role="status">Завантажуємо ситуацію…</p>
+} @else if (status() !== 'ready') {
+  <section class="state-panel" role="alert">
+    <h1>{{ status() === 'not-found' ? 'Сценарій не знайдено' : 'Не вдалося завантажити сценарій' }}</h1>
+    <p>Матеріал недоступний або не пройшов перевірку. Поверніться до каталогу та спробуйте ще раз.</p>
+    <a [routerLink]="navigation.back" class="button">{{ navigation.backLabel }}</a>
+  </section>
+} @else {
+  @if (session.scenario(); as scenario) {
+    <header class="page-heading">
+      <p class="eyebrow">Індивідуальне проходження · версія {{ scenario.version }}</p>
+      <h1 class="scenario-title">{{ scenario.title }}</h1>
+      <app-scenario-status [scenario]="scenario" />
+      <p class="muted">Прийнято рішень: {{ session.state()?.decisionCount }}. Прогрес зберігається лише до перезавантаження цієї вкладки.</p>
+    </header>
+    @if (session.error()) { <p role="alert" class="learning-note">{{ session.error() }}</p> }
+
+    @if (session.feedback() !== null) {
+      <section class="reading-panel" aria-labelledby="feedback-heading" aria-live="polite">
+        <p class="eyebrow">Зупинка для осмислення</p>
+        <h2 id="feedback-heading">Наслідки вашого рішення</h2>
+        @if (recentDecision(); as decision) {
+          <p><strong>Ваш вибір:</strong> {{ decision.label }}</p>
+          <p>{{ decision.explanation }}</p>
+        }
+        <app-timeline [entries]="feedbackEvents()" />
+        @if (session.state(); as state) { <app-dimensions [values]="state.metrics" /> }
+        <div class="actions">
+          @if (session.state()?.status === 'completed') {
+            <button class="button" type="button" data-action="feedback-next" (click)="session.continue()">Переглянути завершення</button>
+          } @else {
+            <button class="button" type="button" data-action="feedback-next" (click)="session.continue()">Продовжити історію</button>
+          }
+        </div>
+      </section>
+    } @else if (session.node(); as node) {
+      <section class="reading-panel" aria-labelledby="node-heading">
+        <h2 id="node-heading">{{ node.title }}</h2>
+        <p class="story-text">{{ node.narrative }}</p>
+        @if (node.context) { <aside class="learning-note">{{ node.context }}</aside> }
+        @switch (node.type) {
+          @case ('narrative') {
+            <p class="muted">На початку або після перезавантаження історія стартує зі вступу. Ваш вибір не надсилається іншим людям.</p>
+            <button type="button" class="button" data-action="advance" (click)="session.advance(node.id)">До наступного етапу</button>
+            <details class="reading-details"><summary>Джерела та статус перевірки</summary><app-sources [sources]="scenario.sources" /></details>
+          }
+          @case ('decision') {
+            <ul class="value-list" aria-label="Цінності в напрузі">
+              @for (value of node.valuesInTension; track $index) { <li>{{ value }}</li> }
+            </ul>
+            <p class="muted">Оберіть дію, перегляньте її обмеження та підтвердьте вибір.</p>
+            <div class="choice-list" role="group" aria-label="Варіанти рішення">
+              @for (choice of session.options(); track choice.id) {
+                <button type="button" class="choice" [attr.aria-pressed]="session.selectedChoiceId() === choice.id" [attr.data-choice-id]="choice.id" (click)="session.select(choice.id)">
+                  <span class="choice-mark" aria-hidden="true">{{ session.selectedChoiceId() === choice.id ? '●' : '○' }}</span><span>{{ choice.label }}</span>
+                </button>
+              }
+            </div>
+            @if (selected(); as choice) {
+              <section class="confirmation" aria-live="polite" aria-labelledby="confirm-heading">
+                <h3 id="confirm-heading">Підтвердити цей вибір?</h3>
+                <p>{{ choice.explanation }}</p>
+                @if (choice.legalStatus === 'uncertain' || !choice.legalStatus) {
+                  <p class="small">Правову допустимість не підтверджено. Перевірка норм і повноважень залишається окремим питанням.</p>
+                } @else {
+                  <p class="small">Правовий статус у матеріалі: {{ choice.legalStatus === 'allowed' ? 'позначено допустимим' : 'позначено обмеженим' }}. Звірте посилання й застосовність джерел.</p>
+                }
+                <button type="button" class="button" data-action="confirm" (click)="session.confirm()">Підтвердити рішення</button>
+              </section>
+            }
+          }
+          @case ('ending') {
+            <a class="button" [routerLink]="[navigation.base, scenario.id, 'debrief']">До розбору рішень</a>
+          }
+        }
+      </section>
+    }
+    @if (session.state(); as state) {
+      @if (state.decisionCount > 0 && session.feedback() === null) {
+        <section class="progress-panel" aria-label="Вже реалізовані наслідки">
+          <h2>Виміри наслідків</h2><app-dimensions [values]="state.metrics" />
+          <details class="reading-details"><summary>Історія наслідків</summary><app-timeline [entries]="timeline()" /></details>
+        </section>
+      }
+      @if (state.decisionCount > 0) {
+        <div class="restart-panel">
+          @if (restarting()) {
+            <p>Почати заново? Поточне проходження буде скинуто.</p>
+            <button type="button" class="button button-secondary" (click)="restart()">Так, почати заново</button>
+            <button type="button" class="text-button" (click)="restarting.set(false)">Скасувати</button>
+          } @else {
+            <button type="button" class="text-button" (click)="restarting.set(true)">Почати заново</button>
+          }
+        </div>
+      }
+    }
+  }
+}

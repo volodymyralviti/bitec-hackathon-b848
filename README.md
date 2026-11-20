@@ -1,9 +1,18 @@
 # Ethical Dilemmas Simulator
 
 Освітній симулятор етичних дилем українською мовою. Є Angular/NestJS, Scenario DSL
-та два demo-only CIDS-inspired JSON. У Stage 05 додано каталог і preview із джерелами;
-повний solo-прохід заблокований відсутнім у цій гілці `@eds/scenario-engine`.
+та два demo-only CIDS-inspired JSON. Stage 05 додає повний Angular solo-прохід:
+каталог → narrative/рішення → наслідки → ending → debrief, через готовий `@eds/scenario-engine`.
 Деталі фактичного стану й smoke: [README клієнта](apps/client/README.md).
+
+Stage 06 додає NestJS Scenario API та захищений form-based Studio (`/studio`):
+приватні чернетки, validation/import/export, ізольований participant preview,
+явний demo-only показ і незмінні публічні версії. Каталог тепер використовує API;
+для роботи запускайте також `pnpm dev:api`. Серверні capabilities вводяться
+автором під час роботи й не вбудовуються у frontend. Фактичний reviewer gate
+вимкнений до появи реального рецензента. PostgreSQL не налаштований: є файлове
+сховище для одного процесу, без даних учасників. Налаштування, API та обмеження:
+[server README](apps/server/README.md).
 
 ## Структура
 
@@ -11,6 +20,7 @@
 apps/client/       Angular 21, standalone компоненти, Jasmine/Karma
 apps/server/       NestJS 11 + Express, CommonJS, Jest/Supertest
 packages/scenario-schema/ незалежний DSL v1, Zod, graph/provenance validation
+packages/scenario-engine/ детермінований runtime без framework/network залежностей
 content/scenarios/ два сценарії й явний JSON-індекс для static adapter
 ```
 

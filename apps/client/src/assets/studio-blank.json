@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1",
+  "id": "new-scenario",
+  "version": "1.0.0",
+  "language": "uk",
+  "title": "Нова навчальна ситуація",
+  "summary": "Структурна чернетка. Замініть підказки власним навчальним текстом до використання.",
+  "basedOn": [],
+  "publicationStatus": "draft",
+  "contentReview": { "status": "draft", "demoOnly": true, "aiAssisted": true },
+  "startNodeId": "intro",
+  "sources": [{ "sourceId": "author-note", "title": "Авторська чернетка: джерела потребують перевірки", "sourceType": "editorial", "fileCitation": "Додайте точний локатор авторського матеріалу й перевірені джерела; цей шаблон не є нормативним обґрунтуванням.", "versionAsOf": null, "revision": null, "verificationStatus": "unverified", "verifiedAt": null }],
+  "nodes": [
+    { "id": "intro", "type": "narrative", "title": "Вступ", "narrative": "Опишіть вигаданий безпечний контекст, роль і межі відомого.", "sourceIds": ["author-note"], "nextNodeId": "decision-1" },
+    { "id": "decision-1", "type": "decision", "title": "Перше рішення", "narrative": "Опишіть першу ціннісну суперечність.", "sourceIds": ["author-note"], "valuesInTension": ["Перша цінність", "Друга цінність"], "choices": [
+      { "id": "first-a", "label": "Перша обґрунтована альтернатива", "explanation": "Поясніть короткострокову користь, ризики й обмеження.", "nextNodeId": "decision-2", "immediateEffects": [{ "metric": "transparency", "delta": 0, "explanation": "Замініть умовну нульову зміну обґрунтованим авторським ефектом." }], "sourceIds": ["author-note"], "schedule": [{ "id": "delayed-example", "trigger": { "type": "after_decisions", "count": 1 }, "effects": [{ "metric": "effectiveness", "delta": 0, "explanation": "Опишіть підставу відкладеної зміни." }], "consequenceText": "Опишіть наслідок після ще одного рішення." }] },
+      { "id": "first-b", "label": "Друга обґрунтована альтернатива", "explanation": "Поясніть користь і ціну іншого підходу.", "nextNodeId": "decision-2", "immediateEffects": [{ "metric": "fairness", "delta": 0, "explanation": "Опишіть підставу зміни." }], "sourceIds": ["author-note"] }
+    ] },
+    { "id": "decision-2", "type": "decision", "title": "Друге рішення", "narrative": "Додайте новий факт, що змінює умови вибору.", "sourceIds": ["author-note"], "valuesInTension": ["Точність", "Своєчасність"], "choices": [
+      { "id": "second-a", "label": "Перевірити додатковий факт", "explanation": "Опишіть користь перевірки та ціну затримки.", "nextNodeId": "decision-3", "immediateEffects": [{ "metric": "effectiveness", "delta": 0, "explanation": "Опишіть підставу зміни." }], "sourceIds": ["author-note"] },
+      { "id": "second-b", "label": "Підготувати умовну рекомендацію", "explanation": "Опишіть користь своєчасності й межі доказів.", "nextNodeId": "decision-3", "immediateEffects": [{ "metric": "trust", "delta": 0, "explanation": "Опишіть підставу зміни." }], "sourceIds": ["author-note"] }
+    ] },
+    { "id": "decision-3", "type": "decision", "title": "Третє рішення", "narrative": "Опишіть остаточний вибір та спосіб його пояснення.", "sourceIds": ["author-note"], "valuesInTension": ["Підзвітність", "Дієвість"], "choices": [
+      { "id": "third-a", "label": "Перший спосіб завершити рішення", "explanation": "Поясніть наслідки та межі обраного підходу.", "nextNodeId": "ending-a", "immediateEffects": [{ "metric": "transparency", "delta": 0, "explanation": "Опишіть підставу зміни." }], "sourceIds": ["author-note"] },
+      { "id": "third-b", "label": "Інший спосіб завершити рішення", "explanation": "Поясніть інший обґрунтований компроміс.", "nextNodeId": "ending-b", "immediateEffects": [{ "metric": "effectiveness", "delta": 0, "explanation": "Опишіть підставу зміни." }], "sourceIds": ["author-note"] }
+    ] },
+    { "id": "ending-a", "type": "ending", "title": "Перше завершення", "narrative": "Опишіть результат цього варіанта.", "sourceIds": ["author-note"], "debrief": { "summary": "Поясніть компроміс, а не моральну якість людини.", "shortTerm": "Опишіть близькі наслідки.", "longTerm": "Опишіть довгострокові наслідки.", "perspectives": ["Опишіть перспективу однієї зі сторін."], "trustAndReputation": "Поясніть вплив на довіру.", "valuesInTension": ["Перша цінність", "Друга цінність"], "reflectionQuestions": ["Який факт змінив би вашу пораду?", "Які норми та професійні стандарти ще слід перевірити?"], "sourceIds": ["author-note"], "limitations": "Структурна AI-assisted чернетка без юридичної чи експертної перевірки. Джерела unverified. Показники не оцінюють особистість." } },
+    { "id": "ending-b", "type": "ending", "title": "Інше завершення", "narrative": "Опишіть змістовно відмінний результат.", "sourceIds": ["author-note"], "debrief": { "summary": "Поясніть інший компроміс і його ціну.", "shortTerm": "Опишіть близьку користь і ризик.", "longTerm": "Опишіть відкладені наслідки.", "perspectives": ["Опишіть перспективу іншої сторони."], "trustAndReputation": "Поясніть вплив на інституційну довіру.", "valuesInTension": ["Перша цінність", "Друга цінність"], "reflectionQuestions": ["Як пояснити мотиви рішення публічно без захищених відомостей?", "Чи прийняли б ви таку практику в ролі іншої сторони?"], "sourceIds": ["author-note"], "limitations": "Структурна AI-assisted чернетка без юридичної чи експертної перевірки. Джерела unverified. Показники не оцінюють особистість." } }
+  ]
+}

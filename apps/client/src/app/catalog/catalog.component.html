@@ -34,7 +34,8 @@
             <p>{{ scenario.summary }}</p>
             <app-scenario-status [scenario]="scenario" />
             <p class="muted small">Складність: автором не визначена. Усі варіанти потребують пояснення.</p>
-            <a class="button" [routerLink]="['/scenarios', scenario.id, 'play']" [attr.aria-label]="'Переглянути: ' + scenario.title">Переглянути ситуацію <span aria-hidden="true">↗</span></a>
+            <a class="button" [routerLink]="['/scenarios', scenario.id, 'play']" [attr.aria-label]="'Відкрити: ' + scenario.title">Відкрити сценарій <span aria-hidden="true">↗</span></a>
+            <a class="preview-link" [routerLink]="['/scenarios', scenario.id, 'preview']">Лише вступ і джерела</a>
           </article>
         }
       </div>

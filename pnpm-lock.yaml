@@ -86,6 +86,9 @@ importers:
 
   apps/server:
     dependencies:
+      '@eds/scenario-schema':
+        specifier: workspace:*
+        version: link:../../packages/scenario-schema
       '@eds/scenario-engine':
         specifier: workspace:*
         version: link:../../packages/scenario-engine
@@ -105,9 +108,6 @@ importers:
         specifier: ^7.8.1
         version: 7.8.2
     devDependencies:
-      '@eds/scenario-schema':
-        specifier: workspace:*
-        version: link:../../packages/scenario-schema
       '@eslint/eslintrc':
         specifier: ^3.2.0
         version: 3.3.7

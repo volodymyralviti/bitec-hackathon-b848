@@ -1,0 +1,50 @@
+<header class="page-heading"><p class="eyebrow">Scenario Studio</p><h1 class="scenario-title">Майстерня сценаріїв</h1><p class="lead">Вузли, альтернативи й джерела як дані. Збереження чернетки не відкриває її учасникам.</p></header>
+@if (message()) { <p class="learning-note" role="status" aria-live="polite">{{ message() }}</p> }
+@if (!api.authorized()) {
+  <section class="state-panel" aria-labelledby="access-heading">
+    <h2 id="access-heading">Захищений доступ автора</h2>
+    <p>Введіть ключ, отриманий від адміністратора сервера. Він використовується лише у цій вкладці й не додається до експорту.</p>
+    <label class="editor-input">Ключ автора<input type="password" autocomplete="off" [formControl]="keyControl" data-action="author-key" /></label>
+    <button type="button" class="button" (click)="login()" [disabled]="busy() || !keyControl.value" data-action="login">Відкрити Studio</button>
+  </section>
+} @else {
+  <div class="actions"><button type="button" class="button" (click)="newDraft()" [disabled]="busy()" data-action="new-draft">Нова чернетка з трьома рішеннями</button><button type="button" class="button button-secondary" (click)="refresh()" [disabled]="busy()">Оновити список</button><button type="button" class="text-button" (click)="logout()">Закрити доступ і очистити вкладку</button></div>
+  <details class="reading-details"><summary>Збережені сценарії та версії ({{ records().length }})</summary>
+    <ul class="studio-records">@for (record of records(); track record.scenario.id + '@' + record.scenario.version) {
+      <li><button type="button" class="text-button" (click)="open(record)" [disabled]="busy()" [attr.data-record-id]="record.scenario.id + '@' + record.scenario.version">{{ record.scenario.title }} · {{ record.scenario.version }} · {{ record.scenario.publicationStatus }} / {{ record.scenario.contentReview.status }} · ревізія {{ record.revision }}</button></li>
+    }</ul>
+  </details>
+  <aside class="learning-note">Не вводьте персональні, службові чи операційні дані. Шаблон і автоматична валідація не є експертним review. Завершене схвалення доступне лише окремому фактичному рецензенту через захищений API.</aside>
+  @if (workspace.form(); as form) {
+    <div class="studio-toolbar actions">
+      <button type="button" class="button" [disabled]="busy() || form.disabled" (click)="save()" data-action="save-draft">Зберегти приватну версію</button>
+      <button type="button" class="button button-secondary" [disabled]="busy()" (click)="validate()" data-action="validate">Перевірити</button>
+      <button type="button" class="button button-secondary" [disabled]="busy()" (click)="validateOnServer()">Перевірити на сервері</button>
+      <button type="button" class="button button-secondary" [disabled]="busy()" (click)="preview()" data-action="preview">Preview як учасник</button>
+      <button type="button" class="button button-secondary" [disabled]="busy()" (click)="exportJson()" data-action="export">Експорт JSON</button>
+    </div>
+    @if (errors().length) {
+      <section class="state-panel" role="alert"><h2>Помилки ({{ errors().length }})</h2><ul>@for (error of errors(); track $index) { <li><button type="button" class="text-button" (click)="focusIssue(error)">{{ error.path.join('.') || 'JSON' }}: {{ error.message }} ({{ error.code }})</button></li> }</ul></section>
+    }
+    @if (warnings().length) { <details class="reading-details"><summary>Попередження, які не підтверджують достовірності ({{ warnings().length }})</summary><ul>@for (warning of warnings(); track $index) { <li>{{ warning.path.join('.') }}: {{ warning.message }} ({{ warning.code }})</li> }</ul></details> }
+    @if (workspace.record(); as record) {
+      <section class="state-panel"><h2>Версія {{ record.scenario.version }}, ревізія {{ record.revision }}</h2><p>{{ record.scenario.publicationStatus }} / {{ record.scenario.contentReview.status }}. Публічні та завершені review-версії незмінні.</p>
+        <label class="editor-input">Нова версія для редагування<input [formControl]="versionControl" placeholder="1.0.1" /></label>
+        <button type="button" class="button button-secondary" [disabled]="busy() || !versionControl.value" (click)="fork()">Створити наступну приватну версію</button>
+        @if (record.scenario.publicationStatus === 'draft' && record.scenario.contentReview.demoOnly && !form.disabled) {
+          <label class="editor-input editor-checkbox"><input type="checkbox" [formControl]="demoConfirmation" />Я підтверджую публічний показ лише як неперевірене демо без персональних або захищених відомостей.</label>
+          <button type="button" class="button button-secondary" [disabled]="busy() || !demoConfirmation.value" (click)="makeDemo()">Відкрити збережену версію як demo-only</button>
+        }
+      </section>
+    } @else if (form.disabled) { <button type="button" class="button button-secondary" (click)="copyImported()">Створити приватну копію імпортованого матеріалу</button> }
+    <fieldset class="studio-editor" [disabled]="busy()"><legend>Форма сценарію</legend>
+      @for (key of keys(); track key) { <app-editor-field [control]="form.controls[key]" [name]="key" [path]="[key]" [nodeIds]="ids('nodes', 'id')" [sourceIds]="ids('sources', 'sourceId')" [issues]="errors()" [identityLocked]="!!workspace.record()" /> }
+    </fieldset>
+  }
+  <details class="reading-details"><summary>Імпорт JSON</summary>
+    <label class="editor-input">Виберіть JSON-файл<input type="file" accept="application/json,.json" (change)="importFile($event)" /></label>
+    <label class="editor-input">Або вставте JSON<textarea [formControl]="importControl" rows="5" data-action="import-json"></textarea></label>
+    <button type="button" class="button button-secondary" (click)="importJson()" data-action="import">Імпортувати в локальну форму</button>
+  </details>
+}
+<p><a routerLink="/scenarios">Повернутися до публічного каталогу</a></p>
