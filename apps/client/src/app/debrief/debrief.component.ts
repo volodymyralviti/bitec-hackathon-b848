@@ -31,6 +31,14 @@ export class DebriefComponent {
       ? this.session.debrief() : null;
   });
   readonly sources = computed(() => this.scenario()?.sources.filter(source => this.report()?.sourceIds.includes(source.sourceId)) ?? []);
+  readonly legalQuestions = computed(() => {
+    const scenario = this.scenario();
+    return (this.report()?.decisions ?? []).flatMap(record => {
+      const node = scenario?.nodes.find(item => item.id === record.nodeId);
+      const choice = node?.type === 'decision' ? node.choices.find(item => item.id === record.choiceId) : undefined;
+      return choice?.legalQuestions ? [{ label: record.label, text: choice.legalQuestions }] : [];
+    });
+  });
 
   constructor() {
     this.route.paramMap.pipe(switchMap(params => {

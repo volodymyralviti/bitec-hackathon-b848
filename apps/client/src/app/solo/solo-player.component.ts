@@ -26,6 +26,11 @@ export class SoloPlayerComponent {
   readonly feedbackEvents = computed(() => (this.session.feedback() ?? []).filter(entry => entry.kind !== 'decision'));
   readonly timeline = computed(() => (this.session.state()?.timeline ?? []).filter(entry => entry.kind !== 'decision'));
   readonly restarting = signal(false);
+  readonly sources = computed(() => {
+    const node = this.session.node();
+    const ids = new Set([...(node?.sourceIds ?? []), ...(this.selected()?.sourceIds ?? [])]);
+    return this.session.scenario()?.sources.filter(source => ids.has(source.sourceId)) ?? [];
+  });
 
   constructor() {
     const element = inject<ElementRef<HTMLElement>>(ElementRef);

@@ -25,6 +25,19 @@ API на першому запуску копіює лише явний `index.j
 Нотатки для викладача: [постачання](teaching-notes/urgent-supply.md),
 [професійна порада](teaching-notes/truth-under-pressure.md).
 
+## Stage 10B — content review
+
+Окремі реєстри кандидатів і питання до фахівців:
+[urgent-supply](teaching-notes/urgent-supply-content-review.md),
+[truth-under-pressure](teaching-notes/truth-under-pressure-content-review.md).
+Оригінальні сценарні JSON та їхні unverified/draft/demoOnly/aiAssisted не змінено.
+Першоджерела й застосовність не підтверджені; candidate URL не є правовою основою.
+
+Після `pnpm build`, `node --test content/qa/content.test.mjs` додатково виконує
+всі 16 маршрутів справжнім engine і порівнює стани, metrics, delayed events та
+debrief до/після додавання необов’язкових source metadata. Історичний Stage 04
+report залишається записом тодішніх статичних перевірок.
+
 ## Джерела та межі перевірки
 
 У checkout не знайдено `task.pdf` та оригінального українського PDF CIDS.

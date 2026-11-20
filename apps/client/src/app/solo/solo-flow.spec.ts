@@ -55,6 +55,34 @@ describe('Solo routes with real scenario JSON and engine', () => {
     });
   }
 
+  it('shows selected choice sources and debrief route sources without exposing the other branch', async () => {
+    const scenario = scenarioFixture();
+    scenario.sources.push(...['selected-only', 'other-branch'].map(sourceId => ({ ...scenario.sources[0], sourceId, title: sourceId })));
+    const first = scenario.nodes.find(node => node.type === 'decision')!;
+    if (first.type !== 'decision') throw new Error('Fixture decision missing');
+    first.choices[0].sourceIds.push('selected-only');
+    first.choices[0].legalQuestions = 'Питання лише фактичного вибору';
+    first.choices[1].sourceIds.push('other-branch');
+    getById.and.returnValue(of(scenario));
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/scenarios/urgent-supply/play');
+    const click = (selector: string) => { harness.routeNativeElement!.querySelector<HTMLButtonElement>(selector)!.click(); harness.detectChanges(); };
+    click('[data-action="advance"]');
+    expect(harness.routeNativeElement!.querySelector('[data-source-id="selected-only"]')).toBeNull();
+    for (let step = 0; step < 3; step++) {
+      click('[data-choice-id]');
+      if (step === 0) {
+        expect(harness.routeNativeElement!.querySelector('[data-source-id="selected-only"]')).not.toBeNull();
+        expect(harness.routeNativeElement!.querySelector('[data-source-id="other-branch"]')).toBeNull();
+      }
+      click('[data-action="confirm"]'); click('[data-action="feedback-next"]');
+    }
+    await harness.navigateByUrl('/scenarios/urgent-supply/debrief');
+    expect(harness.routeNativeElement!.querySelector('[data-source-id="selected-only"]')).not.toBeNull();
+    expect(harness.routeNativeElement!.querySelector('[data-source-id="other-branch"]')).toBeNull();
+    expect(harness.routeNativeElement!.textContent).toContain('Питання лише фактичного вибору');
+  });
+
   it('handles direct /play, /debrief and id debrief without inventing a run', async () => {
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl('/play');

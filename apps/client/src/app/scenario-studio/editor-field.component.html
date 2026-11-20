@@ -10,15 +10,16 @@
       </label>
     }
     @for (key of keys(); track key) {
-      <app-editor-field [control]="group.controls[key]" [name]="key" [parent]="name()" [path]="childPath(key)" [nodeIds]="nodeIds()" [sourceIds]="sourceIds()" [issues]="issues()" [identityLocked]="identityLocked()" />
+      <app-editor-field [control]="group.controls[key]" [name]="key" [parent]="name()" [path]="childPath(key)" [nodeIds]="nodeIds()" [sourceIds]="sourceIds()" [issues]="issues()" [identityLocked]="identityLocked()" [scenarioForm]="scenarioForm()" />
     }
   </details>
 } @else if (array(); as array) {
   <fieldset class="editor-array" [attr.data-field-path]="pathKey()" tabindex="-1"><legend>{{ title() }}</legend>
     @for (item of array.controls; track item; let index = $index) {
       <div class="editor-array-item">
-        <app-editor-field [control]="item" [name]="'' + index" [parent]="name()" [path]="childPath(index)" [nodeIds]="nodeIds()" [sourceIds]="sourceIds()" [issues]="issues()" [identityLocked]="identityLocked()" />
-        <button type="button" class="text-button" [disabled]="control().disabled" (click)="remove(index)">Прибрати {{ name() === 'nodes' ? 'вузол' : 'пункт' }} {{ index + 1 }}</button>
+        <app-editor-field [control]="item" [name]="'' + index" [parent]="name()" [path]="childPath(index)" [nodeIds]="nodeIds()" [sourceIds]="sourceIds()" [issues]="issues()" [identityLocked]="identityLocked()" [scenarioForm]="scenarioForm()" />
+        @if (usedSource(index)) { <p class="small">Джерело використовується. Спочатку змініть посилання у вузлах, choices або debrief.</p> }
+        <button type="button" class="text-button" [disabled]="control().disabled || usedSource(index)" (click)="remove(index)">Прибрати {{ name() === 'nodes' ? 'вузол' : 'пункт' }} {{ index + 1 }}</button>
       </div>
     }
     @if (name() === 'nodes') {
