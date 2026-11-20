@@ -8,7 +8,7 @@
     "prepare:scenarios": "pnpm --filter @eds/scenario-schema build && pnpm --filter @eds/scenario-engine build && node scripts/prepare-scenarios.mjs",
     "smoke:schema": "ng build --configuration development --browser src/schema-import.smoke.ts --ts-config tsconfig.schema-smoke.json --output-path .angular/schema-import-smoke",
     "watch": "pnpm run prepare:scenarios && ng build --watch --configuration development",
-    "test": "pnpm run prepare:scenarios && node --test scripts/prepare-scenarios.test.mjs && ng test --watch=false --browsers=ChromeHeadless",
+    "test": "pnpm run prepare:scenarios && node --test scripts/prepare-scenarios.test.mjs scripts/smoke-server-lifecycle.test.mjs && ng test --watch=false --browsers=ChromeHeadless",
     "test:watch": "pnpm run prepare:scenarios && ng test",
     "typecheck": "ngc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
     "test:scenario-assets": "pnpm run prepare:scenarios && node --test scripts/prepare-scenarios.test.mjs"

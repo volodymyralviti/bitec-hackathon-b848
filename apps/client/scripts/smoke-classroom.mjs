@@ -7,6 +7,7 @@ import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { startScenarioApi, proxyApi } from './scenario-api-harness.mjs';
+import { manageSmokeServer } from './smoke-server-lifecycle.mjs';
 
 assert.ok(process.env.CHROME_BIN, 'Set CHROME_BIN to installed Chrome/Edge');
 const root = path.resolve(fileURLToPath(new URL('../dist/client/browser/', import.meta.url)));
@@ -22,11 +23,13 @@ const server = http.createServer((request, response) => {
   response.setHeader('Content-Type', { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.ico': 'image/x-icon' }[path.extname(file)] ?? 'application/octet-stream');
   response.end(fs.readFileSync(file));
 });
+const lifecycle = manageSmokeServer(server);
 server.on('upgrade', (request, socket, head) => {
   if (!request.url.startsWith('/api/classroom-socket/')) { socket.destroy(); return; }
   // Preserve original Host so the gateway can enforce browser Origin equality.
   const upstream = http.request(new URL(request.url, api.origin), { headers: request.headers });
   upstream.on('upgrade', (response, remote, remoteHead) => {
+    lifecycle.track(remote);
     socket.write(`HTTP/1.1 ${response.statusCode} Switching Protocols\r\n` + Object.entries(response.headers).map(([key, value]) => `${key}: ${value}\r\n`).join('') + '\r\n');
     if (head.length) remote.write(head); if (remoteHead.length) socket.write(remoteHead);
     remote.pipe(socket); socket.pipe(remote);
@@ -152,4 +155,8 @@ try {
   const report = { browserContexts: 4, participants: 3, completeDecisionRounds: 3, keyboardVote: true, noLiveResults: true, afterCloseAggregateOnly: true, sharedEngineDebrief: true, smallGroupTwoVotesSuppressed: true, mobile360Overflow: false, noIdentityPrompt: true, browserStorageEmpty: true, consoleErrors: errors };
   fs.writeFileSync(path.join(artifacts, 'classroom-browser-report.json'), JSON.stringify(report, null, 2) + '\n'); console.log(JSON.stringify(report, null, 2));
   await control.send('Browser.close');
-} finally { for (const socket of sockets) socket.close(); browser.kill(); api.close(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
+} finally {
+  for (const socket of sockets) socket.close();
+  browser.kill();
+  try { await lifecycle.close(); } finally { api.close(); }
+}
